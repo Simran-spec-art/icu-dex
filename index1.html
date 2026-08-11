@@ -1,0 +1,1404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Critical Care Pokédex — ICU Mastery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7fbff;
+  --ink:#1f2a44;
+  --ink-soft:#54617f;
+  --line:#e6ecf5;
+  --card:#ffffff;
+  --radius:18px;
+  --shadow:0 6px 18px rgba(31,42,68,.08),0 2px 6px rgba(31,42,68,.06);
+  --shadow-lg:0 16px 40px rgba(31,42,68,.14);
+  --pokeball:#ee3d3d;
+  --disp:'Baloo 2','Segoe UI',system-ui,sans-serif;
+  --body:'Nunito','Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:var(--body);color:var(--ink);
+  background:
+    radial-gradient(circle at 12% 8%, #eaf4ff 0, transparent 34%),
+    radial-gradient(circle at 88% 4%, #ffeef6 0, transparent 30%),
+    var(--bg);
+  background-attachment:fixed;
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(circle, #d7e3f2 1px, transparent 1.4px);
+  background-size:26px 26px;
+}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 16px 90px}
+h1,h2,h3,h4{font-family:var(--disp);margin:0;line-height:1.15;letter-spacing:.2px}
+a{color:#1d74d6}
+button{font-family:var(--body);cursor:pointer}
+:focus-visible{outline:3px solid #ffb020;outline-offset:2px;border-radius:8px}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  backdrop-filter:blur(10px);background:rgba(247,251,255,.86);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{max-width:1080px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:12px}
+.pokeball{width:30px;height:30px;border-radius:50%;flex:0 0 auto;position:relative;
+  background:linear-gradient(#ee3d3d 0 50%, #fff 50% 100%);border:2.5px solid #21293f;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+.pokeball::before{content:"";position:absolute;left:0;right:0;top:50%;height:2.5px;background:#21293f;transform:translateY(-50%)}
+.pokeball::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;background:#fff;border:2.5px solid #21293f;transform:translate(-50%,-50%)}
+.brand{font-family:var(--disp);font-weight:800;font-size:16px;white-space:nowrap}
+.brand small{display:block;font-family:var(--body);font-weight:700;font-size:10.5px;color:var(--ink-soft);letter-spacing:.4px;text-transform:uppercase}
+.topbar-xp{margin-left:auto;display:flex;align-items:center;gap:10px;min-width:0}
+.lvl-chip{font-family:var(--disp);font-weight:700;font-size:12px;background:#21293f;color:#fff;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.mini-bar{width:120px;height:9px;border-radius:20px;background:#e2e9f3;overflow:hidden;flex:0 0 auto}
+.mini-bar>i{display:block;height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,#ffd34e,#ff8fab,#5ac8fa);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+@media(max-width:560px){.mini-bar{width:74px}.brand small{display:none}}
+
+/* ---------- Hero trainer card ---------- */
+.hero{margin:20px 0 8px;border-radius:26px;padding:22px 22px 20px;color:#12203a;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,#fff6d9 0%,#ffe0ec 38%,#dff1ff 72%,#e3fff2 100%);
+  border:1px solid #fff;box-shadow:var(--shadow-lg)}
+.hero::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.9),rgba(255,255,255,0));pointer-events:none}
+.hero h1{font-size:clamp(24px,5.4vw,38px);font-weight:800}
+.hero .tag{display:inline-block;font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;
+  background:#21293f;color:#fff;padding:4px 12px;border-radius:20px;margin-bottom:12px}
+.hero p{margin:8px 0 0;max-width:640px;font-weight:600;color:#2b3a5a}
+.trainer-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.stat{background:rgba(255,255,255,.72);border:1px solid #fff;border-radius:16px;padding:10px 14px;min-width:104px;box-shadow:0 3px 8px rgba(31,42,68,.06)}
+.stat b{display:block;font-family:var(--disp);font-size:22px;font-weight:800;line-height:1}
+.stat span{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.5px}
+.xp-shell{margin-top:16px}
+.xp-labels{display:flex;justify-content:space-between;font-size:11.5px;font-weight:800;color:#31405f;margin-bottom:5px}
+.xp-track{height:16px;border-radius:20px;background:rgba(255,255,255,.7);border:1px solid #fff;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.08)}
+.xp-fill{height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,#ffcf3f,#ff8fab 55%,#59c1ff);transition:width .6s cubic-bezier(.2,.8,.2,1);position:relative}
+.xp-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  background-size:40px 100%;animation:sheen 2.2s linear infinite}
+@keyframes sheen{from{background-position:-60px}to{background-position:260px}}
+
+/* ---------- Tabs ---------- */
+.tabs{display:flex;gap:8px;margin:22px 0 6px;flex-wrap:wrap}
+.tab{border:2px solid var(--line);background:var(--card);color:var(--ink-soft);font-weight:800;font-size:14px;
+  padding:9px 16px;border-radius:14px;box-shadow:var(--shadow);transition:transform .12s,border-color .12s,color .12s}
+.tab:hover{transform:translateY(-2px)}
+.tab.active{color:#12203a;border-color:#21293f}
+.tab .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ff8fab;margin-right:7px;vertical-align:middle}
+
+/* ---------- Dex grid ---------- */
+.section-head{display:flex;align-items:baseline;gap:12px;margin:20px 2px 12px}
+.section-head h2{font-size:22px;font-weight:800}
+.section-head p{margin:0;font-size:13px;color:var(--ink-soft);font-weight:600}
+.dexgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:14px}
+.dexcard{position:relative;border-radius:var(--radius);background:var(--card);border:1px solid var(--line);
+  box-shadow:var(--shadow);overflow:hidden;text-align:left;padding:0;transition:transform .14s,box-shadow .14s;color:inherit}
+.dexcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.dexcard .banner{padding:14px 15px 40px;color:#fff;position:relative;
+  background:linear-gradient(135deg,var(--tc),color-mix(in srgb,var(--tc) 70%,#000 8%))}
+.dexcard .num{font-family:var(--mono);font-weight:700;font-size:12px;opacity:.9;letter-spacing:1px}
+.dexcard .type-pill{position:absolute;top:13px;right:13px;font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+  background:rgba(255,255,255,.28);padding:3px 9px;border-radius:20px}
+.dexcard .emoji{font-size:30px;line-height:1;margin-top:6px}
+.dexcard h3{color:#fff;font-size:17px;font-weight:700;margin-top:7px;text-shadow:0 1px 2px rgba(0,0,0,.14);padding-right:8px}
+.dexcard .foot{padding:12px 15px 14px;display:flex;align-items:center;gap:10px}
+.dexcard .prog{flex:1;height:8px;border-radius:20px;background:var(--tcl);overflow:hidden}
+.dexcard .prog>i{display:block;height:100%;width:0;background:var(--tc);border-radius:20px;transition:width .4s}
+.dexcard .cnt{font-size:11px;font-weight:800;color:var(--ink-soft);white-space:nowrap}
+.medallion{position:absolute;left:15px;bottom:52px;width:34px;height:34px;border-radius:50%;
+  background:#fff;border:3px solid var(--tc);display:grid;place-items:center;font-size:16px;
+  box-shadow:0 3px 8px rgba(0,0,0,.16);transform:scale(.7);opacity:.35;transition:transform .3s,opacity .3s}
+.dexcard.mastered .medallion{transform:scale(1);opacity:1;animation:pop .4s}
+.dexcard.mastered .banner::after{content:"MASTERED";position:absolute;bottom:9px;right:14px;font-size:10px;font-weight:800;letter-spacing:1.4px;opacity:.92}
+@keyframes pop{0%{transform:scale(.4)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+
+/* ---------- Module detail ---------- */
+.back-row{display:flex;align-items:center;gap:10px;margin:6px 0 14px;flex-wrap:wrap}
+.btn{border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:13.5px;
+  padding:9px 15px;border-radius:13px;box-shadow:var(--shadow);transition:transform .12s}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary{border:none;color:#fff;background:#21293f}
+.btn.nav{margin-left:auto}
+.mod-banner{border-radius:24px;padding:22px 22px 20px;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(130deg,var(--tc),color-mix(in srgb,var(--tc) 66%,#000 10%));box-shadow:var(--shadow-lg)}
+.mod-banner::after{content:"";position:absolute;right:-60px;bottom:-70px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.30),rgba(255,255,255,0));pointer-events:none}
+.mod-banner .num{font-family:var(--mono);font-weight:700;font-size:13px;opacity:.9;letter-spacing:1.5px}
+.mod-banner h2{font-size:clamp(22px,4.8vw,32px);font-weight:800;margin:4px 0 6px;text-shadow:0 1px 3px rgba(0,0,0,.16)}
+.mod-banner .type-pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  background:rgba(255,255,255,.26);padding:4px 12px;border-radius:20px}
+.mod-banner .big-emoji{position:absolute;right:18px;top:16px;font-size:56px;opacity:.9;filter:drop-shadow(0 3px 6px rgba(0,0,0,.2))}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:18px 20px;margin-top:14px}
+.panel h3{font-size:16px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.panel h3 .ic{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:14px;
+  background:var(--tcl);flex:0 0 auto}
+.obj{list-style:none;padding:0;margin:0;display:grid;gap:7px}
+.obj li{padding-left:26px;position:relative;font-weight:600}
+.obj li::before{content:"▸";position:absolute;left:6px;color:var(--tc);font-weight:800}
+
+.content h4{font-size:14.5px;font-weight:800;margin:15px 0 5px;color:var(--ink)}
+.content h4:first-child{margin-top:2px}
+.content p{margin:6px 0}
+.content ul{margin:6px 0;padding-left:20px}
+.content li{margin:3px 0}
+.content strong{color:#12203a}
+.hl{background:linear-gradient(transparent 58%,var(--tcl) 58%);font-weight:800;padding:0 1px;border-radius:2px}
+.pill-inline{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:700;background:var(--tcl);
+  color:#12203a;padding:1px 7px;border-radius:7px;white-space:nowrap}
+table.tbl{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+table.tbl th,table.tbl td{border:1px solid var(--line);padding:7px 9px;text-align:left}
+table.tbl th{background:var(--tcl);font-family:var(--disp);font-weight:700}
+table.tbl td:first-child{font-weight:800}
+.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.warn{border-left:5px solid #ff8f3f;background:#fff6ee;border-radius:12px;padding:11px 14px;margin:12px 0;font-weight:600}
+.warn b{color:#c25313}
+.pearl{border-left:5px solid #22b07d;background:#effbf5;border-radius:12px;padding:11px 14px;margin:9px 0;font-weight:600}
+.pearl b{color:#127a53}
+
+/* key numbers */
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px}
+.kv .cell{border:1px solid var(--line);border-radius:13px;padding:10px 12px;background:linear-gradient(180deg,#fff,var(--tcl))}
+.kv .cell .val{font-family:var(--mono);font-weight:700;font-size:15px;color:#12203a}
+.kv .cell .lab{font-size:11px;font-weight:700;color:var(--ink-soft);margin-top:2px;line-height:1.3}
+
+/* pimp cards */
+.pimp{border:2px solid var(--tcl);border-radius:14px;margin:9px 0;overflow:hidden;background:#fff;transition:border-color .2s}
+.pimp[open]{border-color:var(--tc)}
+.pimp>summary{list-style:none;cursor:pointer;padding:12px 15px;font-weight:800;display:flex;align-items:center;gap:10px}
+.pimp>summary::-webkit-details-marker{display:none}
+.pimp>summary .q{flex:1}
+.pimp>summary .chev{width:26px;height:26px;border-radius:8px;background:var(--tcl);display:grid;place-items:center;
+  font-weight:800;color:var(--tc);flex:0 0 auto;transition:transform .2s}
+.pimp[open]>summary .chev{transform:rotate(45deg)}
+.pimp .ans{padding:0 15px 14px;border-top:1px dashed var(--tcl);margin-top:2px;padding-top:11px;font-weight:600}
+.pimp .ans strong{color:#12203a}
+.pimp .ans ul{padding-left:20px;margin:6px 0}
+.hint{font-size:12px;color:var(--ink-soft);font-weight:700;margin:2px 0 10px}
+
+/* links */
+.links{display:grid;gap:9px}
+.linkcard{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;
+  border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:#fff;transition:transform .12s,border-color .12s}
+.linkcard:hover{transform:translateY(-2px);border-color:var(--tc)}
+.linkcard .lic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:0 0 auto;color:#fff}
+.linkcard.yt .lic{background:#ff3b3b}
+.linkcard.book .lic{background:#0d9488}
+.linkcard.web .lic{background:#6366f1}
+.linkcard .lt b{display:block;font-weight:800;font-size:14px}
+.linkcard .lt span{font-size:12px;color:var(--ink-soft);font-weight:600}
+.linkcard .go{margin-left:auto;font-weight:800;color:var(--tc)}
+
+/* checklist / mastery */
+.checklist{display:grid;gap:9px;margin-top:4px}
+.chk{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--line);border-radius:13px;
+  padding:11px 13px;background:#fff;cursor:pointer;user-select:none;transition:background .15s,border-color .15s}
+.chk:hover{border-color:var(--tc)}
+.chk.on{background:var(--tcl);border-color:var(--tc)}
+.chk .box{width:24px;height:24px;border-radius:8px;border:2.5px solid var(--tc);flex:0 0 auto;display:grid;place-items:center;
+  color:#fff;font-weight:900;font-size:15px;transition:background .15s;background:#fff;margin-top:1px}
+.chk.on .box{background:var(--tc)}
+.chk .txt{font-weight:700;padding-top:1px}
+.chk.on .txt{color:#12203a}
+.master-row{margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.master-badge{display:none;align-items:center;gap:10px;font-weight:800;color:#127a53;background:#effbf5;
+  border:2px solid #b7ecd4;border-radius:14px;padding:10px 15px}
+.master-badge.show{display:flex;animation:pop .4s}
+
+/* badge case */
+.badgecase{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-top:14px}
+.badge-slot{border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:var(--shadow);padding:16px 12px;text-align:center;
+  filter:grayscale(1);opacity:.5;transition:.3s}
+.badge-slot.earned{filter:none;opacity:1}
+.badge-slot .disc{position:relative;width:56px;height:56px;border-radius:50%;margin:0 auto 9px;display:grid;place-items:center;font-size:26px;
+  background:linear-gradient(135deg,var(--tc),color-mix(in srgb,var(--tc) 60%,#000 12%));color:#fff;
+  box-shadow:0 4px 10px rgba(0,0,0,.18);border:3px solid #fff}
+.badge-slot b{display:block;font-family:var(--disp);font-size:13px;font-weight:700;line-height:1.2}
+.badge-slot span{font-size:10.5px;color:var(--ink-soft);font-weight:700}
+.badge-slot.earned .disc::after{content:"✓";position:absolute;top:-4px;right:-4px;background:#22b07d;color:#fff;
+  width:21px;height:21px;border-radius:50%;font-size:12px;display:grid;place-items:center;border:2.5px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+
+/* cram sheet */
+.cram h3{font-size:18px;font-weight:800;margin:20px 0 8px;padding-bottom:6px;border-bottom:3px solid var(--line)}
+.cram-grid{columns:2;column-gap:16px}
+@media(max-width:720px){.cram-grid{columns:1}}
+.cram-block{break-inside:avoid;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;background:#fff;box-shadow:var(--shadow)}
+.cram-block h4{font-size:14px;font-weight:800;margin-bottom:6px;color:#12203a;display:flex;align-items:center;gap:7px}
+.cram-block h4 .d{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+.cram-block ul{margin:0;padding-left:18px;font-size:13px;font-weight:600}
+.cram-block li{margin:4px 0}
+.cram-block code{font-family:var(--mono);font-weight:700;background:#f0f4fa;padding:1px 5px;border-radius:6px;font-size:12px}
+
+/* confetti + toast */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.confo{position:absolute;width:10px;height:14px;top:-20px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.9}}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);z-index:70;
+  background:#21293f;color:#fff;font-weight:800;padding:13px 20px;border-radius:16px;box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;gap:10px;transition:transform .4s cubic-bezier(.2,.9,.2,1);max-width:92vw}
+#toast.show{transform:translate(-50%,0)}
+#toast .tem{font-size:22px}
+.reset{background:transparent;border:none;color:var(--ink-soft);font-weight:700;font-size:12.5px;text-decoration:underline;padding:6px}
+.hidden{display:none!important}
+.note{font-size:12.5px;color:var(--ink-soft);font-weight:600;margin-top:10px;text-align:center}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="pokeball" aria-hidden="true"></div>
+    <div class="brand">ICU MASTERY<small>Critical Care Pokédex</small></div>
+    <div class="topbar-xp">
+      <span class="lvl-chip" id="tbLvl">Lv 1</span>
+      <div class="mini-bar"><i id="tbBar"></i></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="tag">Two-Day Boss Rush · Attending Level</span>
+    <h1>Gotta Master 'Em All 🩺</h1>
+    <p>Fourteen high-yield ICU domains, distilled to attending-level depth with the exact <b>Pimp Points</b> an intensivist APD asks on rounds. Check off each mastery skill to earn badges, bank XP, and level up from med student to intensivist.</p>
+    <div class="trainer-stats">
+      <div class="stat"><b id="sBadges">0/14</b><span>Badges</span></div>
+      <div class="stat"><b id="sSkills">0</b><span>Skills mastered</span></div>
+      <div class="stat"><b id="sXp">0</b><span>Total XP</span></div>
+      <div class="stat"><b id="sPct">0%</b><span>Complete</span></div>
+    </div>
+    <div class="xp-shell">
+      <div class="xp-labels"><span id="xpTitle">Pre-Clinical Student</span><span id="xpNext"></span></div>
+      <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+    </div>
+  </section>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="dex"><span class="dot"></span>Pokédex</button>
+    <button class="tab" data-tab="cram">Cram Sheet</button>
+    <button class="tab" data-tab="badges">Badge Case</button>
+  </nav>
+
+  <!-- DEX LIST -->
+  <div id="view-dex">
+    <div class="section-head">
+      <h2>The Critical Care Dex</h2>
+      <p>Tap an entry to open the full module</p>
+    </div>
+    <div class="dexgrid" id="dexGrid"></div>
+    <p class="note">Progress saves in this browser. <b>Download this file and open it locally</b> so your badges persist across study sessions. <button class="reset" id="resetBtn">Reset all progress</button></p>
+  </div>
+
+  <!-- MODULE DETAIL -->
+  <div id="view-module" class="hidden"></div>
+
+  <!-- CRAM -->
+  <div id="view-cram" class="hidden"><div class="cram" id="cramBody"></div></div>
+
+  <!-- BADGES -->
+  <div id="view-badges" class="hidden">
+    <div class="section-head"><h2>Badge Case</h2><p>Master every skill in a module to earn its badge</p></div>
+    <div class="badgecase" id="badgeCase"></div>
+  </div>
+</div>
+
+<div id="confetti" aria-hidden="true"></div>
+<div id="toast" role="status" aria-live="polite"><span class="tem">🎉</span><span id="toastMsg"></span></div>
+
+<script>
+/* ============ STATE + STORAGE ============ */
+const SKEY='icu_mastery_v1';
+const _mem={};
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(state))}catch(e){_mem[SKEY]=JSON.stringify(state)}}
+function load(){try{const s=localStorage.getItem(SKEY);if(s)return JSON.parse(s)}catch(e){if(_mem[SKEY])return JSON.parse(_mem[SKEY])}return{checks:{}}}
+let state=load(); if(!state.checks)state.checks={};
+
+/* Level ladder — maps XP to your training journey */
+const LEVELS=[
+  {xp:0,   title:'Pre-Clinical Student'},
+  {xp:120, title:'Sub-Intern (MS4)'},
+  {xp:260, title:'Intern · PGY-1'},
+  {xp:410, title:'Resident · PGY-2'},
+  {xp:560, title:'Senior Resident · PGY-3'},
+  {xp:710, title:'Critical Care Fellow'},
+  {xp:1000,title:'Intensivist — Dr. Garcia is impressed 🏆'}
+];
+const XP_PER_SKILL=10, BADGE_BONUS=40;
+
+/* ============ MODULE DATA ============ */
+const MODULES=[
+{
+id:1, code:'001', title:'ICU Daily System & Rounds', type:'Foundation', emoji:'🧭',
+color:'#16a34a', tint:'#dcfce7', badge:'The Systems Badge',
+objectives:[
+ 'Run a complete FASTHUG-MAIDENS safety check on every patient, every day',
+ 'Deliver a crisp systems-based ICU presentation the way an intensivist expects it',
+ 'Justify each daily prophylaxis decision with the evidence behind it'
+],
+sections:[
+ {h:'The daily safety checklist — FASTHUG-MAIDENS', body:`<p>The single habit that separates a strong trainee from a great one is running the <span class="hl">same reflex checklist on every patient, every day</span>. Nothing gets forgotten.</p>
+ <ul>
+ <li><strong>F</strong>eeding — enteral nutrition preferred, start within 24–48h if the gut works</li>
+ <li><strong>A</strong>nalgesia — assess pain (CPOT/BPS); treat pain <em>before</em> reaching for sedation</li>
+ <li><strong>S</strong>edation — set a target RASS; do a daily awakening trial (SAT)</li>
+ <li><strong>T</strong>hromboprophylaxis — pharmacologic (LMWH/heparin) unless contraindicated; else mechanical</li>
+ <li><strong>H</strong>ead of bed 30–45° — reduces VAP and aspiration</li>
+ <li><strong>U</strong>lcer prophylaxis — <span class="hl">only if risk factors</span> (mechanical ventilation &gt;48h OR coagulopathy). Not everyone.</li>
+ <li><strong>G</strong>lucose — target 140–180 mg/dL</li>
+ <li><strong>M</strong>edications — reconcile, renally dose, stop what's not needed</li>
+ <li><strong>A</strong>ssess lines/tubes — pull anything unnecessary daily (CLABSI/CAUTI prevention)</li>
+ <li><strong>I</strong>ndications for antibiotics — track day-of-therapy, de-escalate, confirm source</li>
+ <li><strong>D</strong>elirium — screen with CAM-ICU; run the ABCDEF bundle</li>
+ <li><strong>E</strong>lectrolytes — replete K/Mg/Phos proactively</li>
+ <li><strong>N</strong>utrition &amp; bowel regimen — reassess</li>
+ <li><strong>S</strong>pontaneous breathing trial &amp; Skin (pressure-injury check)</li>
+ </ul>`},
+ {h:'The systems-based presentation', body:`<p>Open with a tight <span class="hl">one-liner</span>, then overnight events, then march head-to-toe by system with a problem + plan for each. Never read numbers without an assessment.</p>
+ <p><strong>One-liner template:</strong> "[Age] with [key PMH] admitted for [reason], now ICU day #__, on [vent / pressors / CRRT], trending [better / worse]."</p>
+ <p><strong>Then, by system:</strong></p>
+ <ul>
+ <li><strong>Neuro</strong> — mental status, RASS, CAM-ICU, sedation/analgesia plan</li>
+ <li><strong>CV</strong> — MAP/pressors, rhythm, volume status, telemetry events</li>
+ <li><strong>Resp</strong> — mode + settings, latest ABG, SpO2, secretions, SBT status</li>
+ <li><strong>GI/FEN</strong> — diet/tube feeds, LFTs, bowel regimen, glucose/insulin</li>
+ <li><strong>Renal</strong> — UOP, Cr trend, electrolytes, acid-base, net fluid balance</li>
+ <li><strong>Heme</strong> — Hgb/plt, coags, transfusion thresholds, VTE ppx</li>
+ <li><strong>ID</strong> — Tmax, WBC, cultures, antibiotic + day #, source status</li>
+ <li><strong>Lines/tubes/drains</strong> — what and day # (drives removal decisions)</li>
+ <li><strong>Dispo / code status / family update</strong></li>
+ </ul>
+ <p>Finish each system with a <em>plan</em>, not just data — "lactate down from 4 to 1.8, weaning norepi, off by afternoon."</p>`}
+],
+numbers:[
+ {val:'30–45°', lab:'Head-of-bed angle'},
+ {val:'140–180', lab:'ICU glucose target (mg/dL)'},
+ {val:'>48h vent', lab:'Stress-ulcer ppx trigger'},
+ {val:'RASS 0 to −2', lab:'Usual sedation goal (light)'}
+],
+pearls:[
+ 'Tight glucose control (80–110) increased hypoglycemia and mortality (NICE-SUGAR). 140–180 is the target.',
+ 'Overusing stress-ulcer prophylaxis raises C. difficile and pneumonia risk — reserve it for true indications.'
+],
+pimp:[
+ {q:'Why keep the head of bed at 30–45°?', a:`Reduces <strong>ventilator-associated pneumonia and aspiration risk</strong> by limiting gastric reflux and improving mechanics. It's part of the VAP prevention bundle along with sedation minimization, oral care, and daily SBT/SAT.`},
+ {q:'Who actually needs stress-ulcer prophylaxis?', a:`Only patients with a real risk factor: <span class="hl">mechanical ventilation &gt;48h</span> or <span class="hl">coagulopathy</span> (and select others: shock, high-dose steroids, TBI/burns). Routine PPI in low-risk patients increases <strong>C. difficile and nosocomial pneumonia</strong> without benefit.`},
+ {q:'What glucose target and why not tighter?', a:`<strong>140–180 mg/dL.</strong> NICE-SUGAR showed intensive control (81–108) caused more severe hypoglycemia and <strong>higher mortality</strong> than conventional control. Avoid both hyper- and hypoglycemia.`}
+],
+links:[
+ {kind:'book', label:'IBCC — Checklists & the ICU', sub:'Internet Book of Critical Care (EMCrit)', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'ICU rounds & presentations', sub:'Search — ICU Advantage / Strong Medicine', url:'https://www.youtube.com/results?search_query=ICU+patient+presentation+systems+based+rounds+ICU+Advantage'}
+],
+checklist:[
+ 'I can recite FASTHUG-MAIDENS from memory',
+ 'I can give a systems-based ICU presentation with a plan per system',
+ 'I can name who does (and does not) need stress-ulcer prophylaxis',
+ 'I can defend the 140–180 glucose target with the NICE-SUGAR result'
+]
+},
+{
+id:2, code:'002', title:'Shock — The Approach', type:'Electric', emoji:'⚡',
+color:'#f59e0b', tint:'#fef3c7', badge:'The Voltage Badge',
+objectives:[
+ 'Define shock as a perfusion failure, not just a blood-pressure number',
+ 'Separate the four shock states by their hemodynamic fingerprints',
+ 'Decide whether a hypotensive patient is fluid-responsive at the bedside'
+],
+sections:[
+ {h:'What shock actually is', body:`<p>Shock is <span class="hl">circulatory failure causing inadequate tissue oxygen delivery</span> and cellular hypoxia. It is a perfusion problem — you can be in shock with a "normal" blood pressure, and hypotensive without being in shock.</p>
+ <p>Recognize it by <strong>hypoperfusion markers</strong>, not the cuff alone: lactate &gt;2, oliguria, altered mentation, cool mottled skin, prolonged capillary refill. MAP &lt;65 (or a drop from the patient's baseline) is the trigger, perfusion is the diagnosis.</p>
+ <p><strong>Oxygen delivery:</strong> <span class="pill-inline">DO2 = CO × CaO2</span> and <span class="pill-inline">CaO2 = 1.34 × Hgb × SaO2 + 0.003 × PaO2</span>. So the three levers of delivery are <strong>cardiac output, hemoglobin, and oxygen saturation.</strong></p>`},
+ {h:'The four shocks by hemodynamic profile', body:`<div class="scroll-x"><table class="tbl">
+ <tr><th>Type</th><th>Preload (CVP)</th><th>Cardiac output</th><th>SVR</th><th>SvO2</th></tr>
+ <tr><td>Hypovolemic</td><td>↓</td><td>↓</td><td>↑</td><td>↓</td></tr>
+ <tr><td>Cardiogenic</td><td>↑</td><td>↓</td><td>↑</td><td>↓</td></tr>
+ <tr><td>Obstructive</td><td>↑*</td><td>↓</td><td>↑</td><td>↓</td></tr>
+ <tr><td>Distributive (septic)</td><td>↓ / normal</td><td>↑ early</td><td>↓</td><td>↑ early</td></tr>
+ </table></div>
+ <p style="font-size:12px;color:#54617f">*Obstructive: elevated right-sided pressures (tamponade, massive PE, tension pneumothorax). Distributive is the odd one out — <span class="hl">warm, vasodilated, high output</span> early.</p>
+ <p><strong>SvO2 / ScvO2 tells you delivery-vs-demand:</strong> low = increased extraction (low-output states); high in sepsis = <strong>impaired extraction</strong> (mitochondrial dysfunction / microcirculatory shunting).</p>`},
+ {h:'Is the patient fluid-responsive?', body:`<p>Don't just give fluids — predict the response. <strong>Dynamic</strong> measures beat static ones (CVP is a poor predictor).</p>
+ <ul>
+ <li><strong>Passive leg raise</strong> + measure stroke volume/pulse pressure change — reversible "autobolus," works even in arrhythmia</li>
+ <li><strong>Pulse pressure / stroke volume variation &gt;13%</strong> — but only valid if mechanically ventilated, in sinus rhythm, no spontaneous effort, TV ≥8</li>
+ <li><strong>IVC</strong> collapsibility/distensibility on POCUS</li>
+ </ul>
+ <p>Roughly half of hemodynamically unstable patients are <em>not</em> fluid-responsive — for them, fluids just cause edema. Reassess after each bolus.</p>`}
+],
+numbers:[
+ {val:'MAP ≥65', lab:'Default resuscitation target'},
+ {val:'>2 mmol/L', lab:'Lactate = hypoperfusion flag'},
+ {val:'>13%', lab:'PPV/SVV = fluid-responsive'},
+ {val:'DO2=CO×CaO2', lab:'Oxygen delivery equation'}
+],
+pearls:[
+ 'Elevated lactate is not always hypoperfusion — Type B causes: epinephrine/β-agonists, liver failure, thiamine deficiency, metformin, malignancy, seizures.',
+ 'A POCUS RUSH exam ("pump, tank, pipes") rapidly narrows undifferentiated shock at the bedside.'
+],
+pimp:[
+ {q:'How do you tell the four shock types apart at the bedside?', a:`Combine exam + POCUS. <strong>Cold + vasoconstricted</strong> (narrow pulse pressure, mottled) → cardiogenic/hypovolemic/obstructive. <strong>Warm + vasodilated</strong> (bounding, wide pulse pressure) → distributive. Then POCUS: poor LV = cardiogenic; small hyperdynamic LV + flat IVC = hypovolemic; RV strain / pericardial effusion / lung sliding = obstructive causes.`},
+ {q:'A septic patient has a HIGH SvO2. What does that mean?', a:`In early sepsis, high ScvO2/SvO2 reflects <strong>impaired oxygen extraction</strong> — microcirculatory shunting and mitochondrial dysfunction — not adequate resuscitation. The tissues can't use the oxygen being delivered. Persistently elevated lactate with high SvO2 signals ongoing dysoxia.`},
+ {q:'Why is CVP a poor guide to fluids?', a:`CVP is a <strong>static</strong> pressure that correlates poorly with volume responsiveness (it's confounded by RV compliance, PEEP, tricuspid disease, intra-abdominal pressure). <strong>Dynamic</strong> tests — passive leg raise, PPV/SVV — actually predict whether cardiac output will rise with a bolus.`}
+],
+links:[
+ {kind:'book', label:'IBCC — Undifferentiated shock', sub:'Structured POCUS + hemodynamic approach', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'Shock types & hemodynamics', sub:'Search — Ninja Nerd / Strong Medicine shock', url:'https://www.youtube.com/results?search_query=types+of+shock+hemodynamics+Strong+Medicine+Ninja+Nerd'}
+],
+checklist:[
+ 'I can define shock in perfusion terms and list the hypoperfusion markers',
+ 'I can reproduce the 4-shock hemodynamic table from memory',
+ 'I can interpret a high vs low SvO2',
+ 'I can name two dynamic tests of fluid responsiveness and their limits'
+]
+},
+{
+id:3, code:'003', title:'Sepsis & Septic Shock', type:'Toxic', emoji:'🦠',
+color:'#65a30d', tint:'#ecfccb', badge:'The Toxin Badge',
+objectives:[
+ 'Apply the Sepsis-3 definitions and the Surviving Sepsis hour-1 bundle',
+ 'Sequence resuscitation: cultures, antibiotics, fluids, vasopressors, source control',
+ 'Escalate vasopressors and add steroids on the right evidence'
+],
+sections:[
+ {h:'Definitions (Sepsis-3)', body:`<p><strong>Sepsis</strong> = life-threatening organ dysfunction from a dysregulated host response to infection — operationally an acute rise in <span class="hl">SOFA ≥2</span>. <strong>qSOFA</strong> (RR ≥22, SBP ≤100, altered mentation) is a crude bedside prompt with poor sensitivity — don't use it to rule out sepsis.</p>
+ <p><strong>Septic shock</strong> = sepsis requiring <span class="hl">vasopressors to keep MAP ≥65</span> <em>and</em> lactate &gt;2 despite adequate fluid resuscitation. Mortality exceeds 40%.</p>`},
+ {h:'The hour-1 bundle', body:`<ul>
+ <li><strong>Measure lactate</strong> (repeat if &gt;2 to track clearance)</li>
+ <li><strong>Blood cultures before antibiotics</strong> (don't delay abx for them if drawing is slow)</li>
+ <li><strong>Broad-spectrum antibiotics</strong> — within 1h for shock/high suspicion</li>
+ <li><strong>Crystalloid 30 mL/kg</strong> for hypotension or lactate ≥4</li>
+ <li><strong>Vasopressors</strong> if hypotensive during/after fluids to keep MAP ≥65</li>
+ </ul>
+ <p><strong>Fluids:</strong> balanced crystalloids (LR, Plasma-Lyte) are favored over normal saline (SMART trial — fewer major adverse kidney events). Avoid hydroxyethyl starch. Albumin is a reasonable adjunct after large crystalloid volumes.</p>
+ <p><strong>Antibiotics:</strong> cover based on suspected source + local antibiogram + risk for MRSA/Pseudomonas. <span class="hl">De-escalate</span> at 48–72h on culture data; procalcitonin can help shorten duration.</p>`},
+ {h:'Vasopressor & steroid escalation', body:`<ul>
+ <li><strong>1st — Norepinephrine</strong> (first-line pressor)</li>
+ <li><strong>2nd — Vasopressin</strong> 0.03 U/min (fixed, catecholamine-sparing)</li>
+ <li><strong>3rd — Epinephrine</strong></li>
+ <li><strong>Refractory — Angiotensin II</strong> (ATHOS-3), and reassess source/steroids</li>
+ </ul>
+ <p><strong>Steroids:</strong> add <span class="hl">hydrocortisone 200 mg/day</span> when there's an ongoing vasopressor requirement. ADRENAL showed faster shock resolution; APROCCHSS (hydrocortisone + fludrocortisone) showed a mortality benefit.</p>
+ <p><strong>Source control</strong> is non-negotiable and time-sensitive: drain the abscess, remove the infected line, decompress the obstruction.</p>`}
+],
+numbers:[
+ {val:'30 mL/kg', lab:'Initial crystalloid bolus'},
+ {val:'MAP ≥65', lab:'Vasopressor target'},
+ {val:'0.03 U/min', lab:'Vasopressin (fixed dose)'},
+ {val:'200 mg/d', lab:'Hydrocortisone in shock'}
+],
+pearls:[
+ 'SEPSISPAM: a higher MAP target (80–85) helps only chronically hypertensive patients (less RRT), at the cost of more atrial fibrillation.',
+ 'Vasopressin is dosed fixed, not titrated — it corrects the relative vasopressin deficiency of septic shock and works when adrenergic receptors are down-regulated by acidosis.'
+],
+pimp:[
+ {q:'Why norepinephrine first instead of dopamine?', a:`De Backer (NEJM 2010) showed dopamine caused <strong>more arrhythmias and higher mortality in the cardiogenic-shock subgroup</strong> versus norepinephrine. Norepi gives predictable vasoconstriction with mild inotropy and fewer tachyarrhythmias — it's the guideline first-line pressor.`},
+ {q:'When do you add steroids in septic shock?', a:`When there is an <span class="hl">ongoing vasopressor requirement</span> despite adequate fluids and pressors — hydrocortisone 200 mg/day (often + fludrocortisone). It reflects relative adrenal insufficiency of critical illness; ADRENAL → faster shock reversal, APROCCHSS → mortality benefit.`},
+ {q:'Balanced crystalloid or normal saline — and why?', a:`<strong>Balanced (LR / Plasma-Lyte).</strong> Large-volume normal saline causes a hyperchloremic metabolic acidosis; SMART showed balanced fluids reduced the composite of death, new RRT, and persistent renal dysfunction.`}
+],
+links:[
+ {kind:'book', label:'IBCC — Sepsis & septic shock', sub:'Full resuscitation walkthrough', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'web', label:'Surviving Sepsis Campaign', sub:'2021 international guidelines', url:'https://www.sccm.org/clinical-resources/guidelines/guidelines/surviving-sepsis-guidelines-2021'},
+ {kind:'yt', label:'Sepsis pathophysiology & bundle', sub:'Search — sepsis Surviving Sepsis EMCrit', url:'https://www.youtube.com/results?search_query=sepsis+pathophysiology+surviving+sepsis+bundle'}
+],
+checklist:[
+ 'I can state the Sepsis-3 and septic-shock definitions',
+ 'I can list the hour-1 bundle in order',
+ 'I can escalate pressors norepi → vasopressin → epi and dose steroids',
+ 'I can justify balanced fluids and the MAP-65 target'
+]
+},
+{
+id:4, code:'004', title:'Vasopressors & Inotropes', type:'Steel', emoji:'💉',
+color:'#0d9488', tint:'#ccfbf1', badge:'The Adrenaline Badge',
+objectives:[
+ 'Map each agent to its receptors and predicted hemodynamic effect',
+ 'Pick the right pressor/inotrope for septic, cardiogenic, and RV-failure shock',
+ 'Handle peripheral pressors and extravasation safely'
+],
+sections:[
+ {h:'The receptors', body:`<ul>
+ <li><strong>α1</strong> — vasoconstriction (↑SVR, ↑BP)</li>
+ <li><strong>β1</strong> — inotropy + chronotropy (↑contractility, ↑HR)</li>
+ <li><strong>β2</strong> — vasodilation + bronchodilation</li>
+ <li><strong>V1</strong> — non-adrenergic vasoconstriction (vasopressin)</li>
+ <li><strong>D1</strong> — renal/splanchnic vasodilation (dopamine, low dose)</li>
+ </ul>`},
+ {h:'The agents at a glance', body:`<div class="scroll-x"><table class="tbl">
+ <tr><th>Drug</th><th>Receptors</th><th>Effect / niche</th></tr>
+ <tr><td>Norepinephrine</td><td>α1 ≫ β1</td><td>First-line vasopressor; mild inotrope</td></tr>
+ <tr><td>Epinephrine</td><td>α1, β1, β2</td><td>Anaphylaxis, post-arrest, refractory; ↑lactate</td></tr>
+ <tr><td>Phenylephrine</td><td>pure α1</td><td>Tachyarrhythmia-limited, LVOT obstruction, transient</td></tr>
+ <tr><td>Vasopressin</td><td>V1</td><td>Fixed 0.03 U/min; works in acidosis</td></tr>
+ <tr><td>Dopamine</td><td>dose-dependent</td><td>Mostly abandoned (arrhythmias); niche bradycardia</td></tr>
+ <tr><td>Dobutamine</td><td>β1 &gt; β2</td><td>Inotrope + vasodilator; can drop BP</td></tr>
+ <tr><td>Milrinone</td><td>PDE-3 inhibitor</td><td>Inodilator; RV failure/pulm HTN; renally cleared</td></tr>
+ <tr><td>Angiotensin II</td><td>AT1</td><td>Refractory vasodilatory shock (ATHOS-3)</td></tr>
+ </table></div>`},
+ {h:'Inotrope decision-making', body:`<p><strong>Dobutamine vs milrinone</strong> (DOREMI showed no outcome difference):</p>
+ <ul>
+ <li><strong>Milrinone</strong> — PDE-3 inhibitor raising cAMP downstream of the β-receptor, so it still works in <span class="hl">chronic HF / β-blocked</span> patients; strong pulmonary vasodilator (good for RV failure/pulmonary hypertension); but it's <strong>renally cleared</strong> (accumulates in AKI) and causes more hypotension.</li>
+ <li><strong>Dobutamine</strong> — faster on/off, β-dependent, more tachycardia/arrhythmia; use when renal function is poor or you need titratability.</li>
+ </ul>`}
+],
+numbers:[
+ {val:'0.03 U/min', lab:'Vasopressin fixed dose'},
+ {val:'Norepi', lab:'First-line pressor'},
+ {val:'Phentolamine', lab:'Extravasation antidote'},
+ {val:'PDE-3', lab:'Milrinone mechanism'}
+],
+pearls:[
+ 'Peripheral norepinephrine is acceptable short-term through a large proximal vein for <24h with close monitoring — it does not mandate immediate central access.',
+ 'Epinephrine predictably raises lactate via β2-driven glycolysis; interpret lactate cautiously on epi.'
+],
+pimp:[
+ {q:'Best pressor for RV failure / pulmonary hypertension?', a:`Support systemic pressure <em>without</em> raising pulmonary vascular resistance. Use <strong>norepinephrine or vasopressin</strong> for coronary/systemic perfusion, add an <strong>inodilator (milrinone)</strong> and/or <strong>inhaled pulmonary vasodilators (iNO/epoprostenol)</strong> to offload the RV. Avoid agents/hypoxia/hypercarbia that spike PVR.`},
+ {q:'Patient is hypotensive AND very tachycardic — which pressor?', a:`Favor agents without β1 chronotropy: <strong>phenylephrine</strong> (pure α1, causes reflex bradycardia) or <strong>vasopressin</strong>. Also consider whether the tachycardia is the problem (e.g., rapid AF) needing rate/rhythm control rather than more catecholamine.`},
+ {q:'Norepinephrine extravasated into the arm — what do you do?', a:`Stop the infusion, leave the catheter to aspirate, elevate, and inject <span class="hl">phentolamine</span> (an α-blocker) subcutaneously around the site; topical/local nitroglycerin is an alternative. This reverses the local vasoconstriction and prevents necrosis.`}
+],
+links:[
+ {kind:'book', label:'IBCC — Vasopressors & inotropes', sub:'Receptor pharmacology + selection', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'Vasopressors made simple', sub:'Search — ICU Advantage vasopressors inotropes', url:'https://www.youtube.com/results?search_query=vasopressors+inotropes+ICU+Advantage+pharmacology'}
+],
+checklist:[
+ 'I can match every agent to its receptors and effect',
+ 'I can choose milrinone vs dobutamine and explain why',
+ 'I can pick a pressor for RV failure and for the tachycardic patient',
+ 'I can manage pressor extravasation'
+]
+},
+{
+id:5, code:'005', title:'Mechanical Ventilation', type:'Air', emoji:'🫁',
+color:'#0ea5e9', tint:'#e0f2fe', badge:'The Airflow Badge',
+objectives:[
+ 'Set safe initial ventilator settings on predicted body weight',
+ 'Separate the oxygenation levers from the ventilation levers',
+ 'Diagnose high peak pressure and acute vent decompensation fast'
+],
+sections:[
+ {h:'Core mechanics & modes', body:`<p><strong>Oxygenation</strong> is controlled by <span class="hl">FiO2 and PEEP</span> (mean airway pressure). <strong>Ventilation / CO2</strong> is controlled by <span class="hl">tidal volume and respiratory rate</span> (minute ventilation = TV × RR). Keep these two axes separate in your head.</p>
+ <p><strong>Pressures:</strong> peak pressure is dynamic (airway resistance + alveoli); <span class="pill-inline">plateau pressure</span> is static (alveolar, measured on inspiratory hold); <span class="pill-inline">driving pressure = Pplat − PEEP</span>.</p>
+ <ul>
+ <li><strong>Volume control (AC/VC)</strong> — you set TV; pressure varies. Guarantees minute ventilation.</li>
+ <li><strong>Pressure control (AC/PC)</strong> — you set inspiratory pressure; TV varies with compliance.</li>
+ <li><strong>Pressure support (PSV)</strong> — patient triggers every breath; used for weaning/spontaneous.</li>
+ </ul>`},
+ {h:'Safe initial settings', body:`<ul>
+ <li><strong>Tidal volume 6 mL/kg predicted body weight</strong> (not actual weight)</li>
+ <li>Rate 16–20 to match minute ventilation; adjust to pH/CO2</li>
+ <li>PEEP 5 to start; FiO2 100% then titrate down to SpO2 88–96%</li>
+ <li>Targets: <span class="hl">Pplat &lt;30, driving pressure &lt;15</span></li>
+ </ul>
+ <p><strong>Predicted body weight (height-based):</strong><br>
+ Men: 50 + 2.3 × (height in inches − 60)<br>
+ Women: 45.5 + 2.3 × (height in inches − 60)</p>
+ <p>Set tidal volume on PBW because lung size tracks height, not adiposity — a classic error is using actual weight and over-distending the lungs.</p>`},
+ {h:'Troubleshooting', body:`<p><strong>High peak pressure — is it resistance or compliance?</strong> Check the plateau:</p>
+ <div class="scroll-x"><table class="tbl">
+ <tr><th>Pattern</th><th>Problem</th><th>Causes</th></tr>
+ <tr><td>↑Peak, normal Pplat</td><td>Resistance</td><td>Bronchospasm, secretions/mucus plug, kinked/bitten tube</td></tr>
+ <tr><td>↑Peak, ↑Pplat</td><td>Compliance</td><td>Pneumothorax, pulmonary edema, ARDS, atelectasis, mainstem intubation, auto-PEEP, abdominal distension</td></tr>
+ </table></div>
+ <p><strong>Auto-PEEP (breath stacking):</strong> incomplete exhalation (COPD/asthma, high RR) → flow doesn't return to zero, hypotension. Fix: <span class="hl">lower RR and TV, extend expiratory time, bronchodilators</span>, disconnect to release trapped gas.</p>
+ <p><strong>Acute decompensation on the vent — DOPES:</strong> <strong>D</strong>isplacement (tube moved), <strong>O</strong>bstruction, <strong>P</strong>neumothorax, <strong>E</strong>quipment failure, <strong>S</strong>tacking (auto-PEEP). Disconnect from the vent and bag while you work through it.</p>`}
+],
+numbers:[
+ {val:'6 mL/kg PBW', lab:'Tidal volume'},
+ {val:'<30 cmH2O', lab:'Plateau pressure'},
+ {val:'<15 cmH2O', lab:'Driving pressure'},
+ {val:'88–96%', lab:'SpO2 target range'}
+],
+pearls:[
+ 'To fix hypoxemia: raise FiO2 and/or PEEP. To fix hypercapnia: raise RR and/or TV (minute ventilation). Don\'t reach for the wrong lever.',
+ 'When a vented patient crashes, the first move is often to disconnect and bag by hand — it instantly tests for auto-PEEP and equipment failure.'
+],
+pimp:[
+ {q:'Peak pressure just jumped but plateau is unchanged — cause?', a:`An <strong>airway resistance</strong> problem, since the alveolar (plateau) pressure is normal: <span class="hl">bronchospasm, secretions or a mucus plug, or a kinked/bitten ET tube</span>. If both peak and plateau rise together, it's a compliance problem (pneumothorax, edema, ARDS, mainstem intubation, auto-PEEP).`},
+ {q:'Why set tidal volume on predicted, not actual, body weight?', a:`Lung volume correlates with <strong>height, not adiposity</strong>. Using actual weight in an obese patient over-distends normal-sized lungs, causing volutrauma. PBW keeps you at a lung-protective 6 mL/kg.`},
+ {q:'COPD patient becomes hypotensive on the vent — first thought?', a:`<strong>Auto-PEEP / breath stacking.</strong> Air trapping raises intrathoracic pressure and drops venous return. Disconnect the circuit to let trapped gas escape, then reduce RR/TV and lengthen expiratory time and treat bronchospasm.`}
+],
+links:[
+ {kind:'book', label:'IBCC — Mechanical ventilation', sub:'Modes, settings, and mechanics', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'Ventilator basics & waveforms', sub:'Search — ICU Advantage mechanical ventilation', url:'https://www.youtube.com/results?search_query=mechanical+ventilation+basics+waveforms+ICU+Advantage'}
+],
+checklist:[
+ 'I can set initial vent settings and calculate PBW',
+ 'I can separate oxygenation vs ventilation levers',
+ 'I can work up high peak pressure using the plateau',
+ 'I can recognize auto-PEEP and run the DOPES check'
+]
+}
+,
+{
+id:6, code:'006', title:'ARDS', type:'Storm', emoji:'🌬️',
+color:'#2563eb', tint:'#dbeafe', badge:'The Tempest Badge',
+objectives:[
+ 'Apply the Berlin definition and grade ARDS severity',
+ 'Deliver lung-protective ventilation and defend low tidal volumes',
+ 'Escalate refractory hypoxemia through proning, paralysis, and ECMO'
+],
+sections:[
+ {h:'Berlin definition (2012)', body:`<p>All four must be present:</p>
+ <ul>
+ <li><strong>Timing</strong> — within 1 week of a known insult or new/worsening respiratory symptoms</li>
+ <li><strong>Imaging</strong> — bilateral opacities not fully explained by effusion, collapse, or nodules</li>
+ <li><strong>Origin</strong> — not fully explained by cardiac failure or fluid overload (assess objectively, e.g. echo, if no risk factor)</li>
+ <li><strong>Oxygenation on PEEP ≥5:</strong> mild P/F 200–300, moderate 100–200, <span class="hl">severe ≤100</span></li>
+ </ul>
+ <p>The 2023 global definition also allows SpO2/FiO2 and includes patients on high-flow nasal cannula — worth mentioning if asked.</p>`},
+ {h:'Management pillars', body:`<ul>
+ <li><strong>Lung-protective ventilation</strong> — TV 6 mL/kg PBW (ARDSNet), Pplat &lt;30, and keep <span class="hl">driving pressure &lt;15</span> (Amato: driving pressure is the strongest ventilatory predictor of survival)</li>
+ <li><strong>Permissive hypercapnia</strong> — tolerate a pH down to ~7.20 to protect the lung</li>
+ <li><strong>Higher PEEP</strong> in moderate–severe disease (ARDSNet PEEP/FiO2 tables) to recruit and prevent atelectrauma</li>
+ <li><strong>Conservative fluids</strong> once resuscitated (FACTT — fewer vent days)</li>
+ <li><strong>Prone positioning</strong> for P/F &lt;150, ≥16 h/day — PROSEVA showed a mortality benefit</li>
+ <li><strong>Neuromuscular blockade</strong> (cisatracurium) early in severe ARDS/dyssynchrony — ACURASYS suggested benefit, ROSE was neutral</li>
+ </ul>`},
+ {h:'Refractory hypoxemia ladder', body:`<ul>
+ <li>Optimize PEEP; cautious recruitment maneuvers (ART trial showed harm from aggressive recruitment — be careful)</li>
+ <li><strong>Inhaled pulmonary vasodilators</strong> (iNO, epoprostenol) — improve oxygenation, no mortality benefit; a bridge</li>
+ <li><strong>Prone + paralyze</strong> if not already</li>
+ <li><strong>VV-ECMO</strong> for severe refractory hypoxemia (EOLIA/CESAR) at an experienced center</li>
+ <li>Steroids (e.g., dexamethasone — DEXA-ARDS) may help; established in COVID-ARDS</li>
+ </ul>
+ <p><strong>Why low tidal volumes?</strong> To prevent ventilator-induced lung injury — <span class="hl">volutrauma, barotrauma, atelectrauma, and biotrauma</span>. The injured lung is small ("baby lung"); normal volumes over-distend the few open units.</p>`}
+],
+numbers:[
+ {val:'6 mL/kg PBW', lab:'ARDSNet tidal volume'},
+ {val:'P/F ≤100', lab:'Severe ARDS'},
+ {val:'<150 → prone', lab:'Proning threshold'},
+ {val:'≥16 h/day', lab:'Proning duration'}
+],
+pearls:[
+ 'Driving pressure (Pplat − PEEP) <15 predicts survival better than tidal volume or plateau alone — watch it every day.',
+ 'PROSEVA proned P/F <150 for ≥16h/day and cut mortality — proning is one of the few ARDS interventions with a mortality signal.'
+],
+pimp:[
+ {q:'Recite the Berlin criteria.', a:`<strong>Timing</strong> ≤1 week; <strong>bilateral opacities</strong> not explained by effusion/collapse/nodules; <strong>not fully cardiac/overload</strong> in origin; and <strong>hypoxemia on PEEP ≥5</strong> graded mild (P/F 200–300), moderate (100–200), severe (≤100).`},
+ {q:'Why do low tidal volumes save lives in ARDS?', a:`They prevent <span class="hl">ventilator-induced lung injury</span>. The ARDS lung is functionally small, so conventional volumes over-distend aerated units (volutrauma/barotrauma), repetitive collapse-reopening injures them (atelectrauma), and the resulting inflammatory cascade (biotrauma) causes multi-organ injury. ARDSNet 6 vs 12 mL/kg reduced mortality.`},
+ {q:'When do you prone, and what\'s the evidence?', a:`Prone for <strong>moderate–severe ARDS with P/F &lt;150</strong>, for <span class="hl">≥16 hours/day</span>. PROSEVA (2013) showed a significant mortality reduction. It improves V/Q matching, recruits dorsal lung, and offloads compression.`}
+],
+links:[
+ {kind:'book', label:'IBCC — ARDS', sub:'Lung-protective ventilation in depth', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'ARDS & lung-protective vent', sub:'Search — ARDS ARDSNet proning MedCram', url:'https://www.youtube.com/results?search_query=ARDS+lung+protective+ventilation+proning+ARDSNet'}
+],
+checklist:[
+ 'I can recite all four Berlin criteria and the severity cutoffs',
+ 'I can explain VILI and defend 6 mL/kg tidal volumes',
+ 'I can state the proning threshold and cite PROSEVA',
+ 'I can list the refractory-hypoxemia ladder including ECMO'
+]
+},
+{
+id:7, code:'007', title:'Acid–Base Disorders', type:'Poison', emoji:'🧪',
+color:'#7c3aed', tint:'#ede9fe', badge:'The Alchemy Badge',
+objectives:[
+ 'Work any blood gas systematically in five steps',
+ 'Check compensation with Winter\'s formula and the expected-value rules',
+ 'Unmask hidden mixed disorders with the anion gap and delta-delta'
+],
+sections:[
+ {h:'The five-step method', body:`<ol>
+ <li><strong>pH</strong> — acidemia (&lt;7.35) or alkalemia (&gt;7.45)?</li>
+ <li><strong>Primary disorder</strong> — look at PaCO2 and HCO3: low HCO3 = metabolic acidosis; high HCO3 = metabolic alkalosis; high PaCO2 = respiratory acidosis; low PaCO2 = respiratory alkalosis</li>
+ <li><strong>Compensation</strong> — is it appropriate? (formulas below)</li>
+ <li><strong>Anion gap</strong> = Na − (Cl + HCO3), normal 8–12; <span class="hl">correct for albumin</span>: add 2.5 to the gap per 1 g/dL albumin below 4</li>
+ <li><strong>Delta-delta</strong> (only if the gap is high) to find a second metabolic process</li>
+ </ol>`},
+ {h:'Compensation formulas', body:`<div class="scroll-x"><table class="tbl">
+ <tr><th>Primary disorder</th><th>Expected compensation</th></tr>
+ <tr><td>Metabolic acidosis</td><td><strong>Winter's: PaCO2 = 1.5×HCO3 + 8 (±2)</strong></td></tr>
+ <tr><td>Metabolic alkalosis</td><td>PaCO2 = 0.7×HCO3 + 21 (±2)</td></tr>
+ <tr><td>Resp acidosis — acute</td><td>HCO3 ↑1 per 10 ↑PaCO2</td></tr>
+ <tr><td>Resp acidosis — chronic</td><td>HCO3 ↑3.5–4 per 10 ↑PaCO2</td></tr>
+ <tr><td>Resp alkalosis — acute</td><td>HCO3 ↓2 per 10 ↓PaCO2</td></tr>
+ <tr><td>Resp alkalosis — chronic</td><td>HCO3 ↓4–5 per 10 ↓PaCO2</td></tr>
+ </table></div>
+ <p>If the measured PaCO2 is <em>higher</em> than Winter's predicts → there's also a respiratory acidosis; if <em>lower</em> → also a respiratory alkalosis.</p>`},
+ {h:'Anion gap, delta-delta, and causes', body:`<p><strong>Delta ratio = ΔAG / ΔHCO3 = (AG − 12) / (24 − HCO3):</strong></p>
+ <ul>
+ <li><strong>&lt;1</strong> → concurrent <em>non-gap</em> metabolic acidosis</li>
+ <li><strong>1–2</strong> → pure high-gap metabolic acidosis</li>
+ <li><strong>&gt;2</strong> → concurrent metabolic <em>alkalosis</em> (or a chronic respiratory acidosis with a high baseline HCO3)</li>
+ </ul>
+ <p><strong>High-gap causes — GOLD MARK:</strong> Glycols, Oxoproline (chronic acetaminophen), L-lactate, D-lactate, Methanol, Aspirin, Renal failure, Ketoacidosis.</p>
+ <p><strong>Non-gap (hyperchloremic) causes:</strong> GI bicarb loss (diarrhea), renal tubular acidosis, saline infusion, carbonic-anhydrase inhibitors. Use the <span class="hl">urine anion gap (Na+K−Cl)</span>: negative = GI cause (kidney appropriately excreting NH4+); positive = renal cause (RTA).</p>
+ <p><strong>Osmolar gap</strong> = measured − calculated osm [2Na + glucose/18 + BUN/2.8]. A gap &gt;10 suggests a toxic alcohol (methanol, ethylene glycol).</p>
+ <p><strong>Worked example:</strong> DKA patient who's been vomiting. You find a high-gap acidosis (ketones) but the delta ratio is &gt;2 and pH is near-normal → there's a superimposed <em>metabolic alkalosis</em> from vomiting. The gap reveals the process the pH alone hides.</p>`}
+],
+numbers:[
+ {val:'1.5×HCO3+8', lab:"Winter's expected PaCO2"},
+ {val:'Na−(Cl+HCO3)', lab:'Anion gap (nl 8–12)'},
+ {val:'+2.5 / g<4', lab:'Albumin correction'},
+ {val:'(AG−12)/(24−HCO3)', lab:'Delta ratio'}
+],
+pearls:[
+ 'Always correct the anion gap for albumin — every 1 g/dL below 4 hides ~2.5 points of gap, so hypoalbuminemic patients can have a "normal" gap that\'s actually elevated.',
+ 'A near-normal pH with a wide anion gap is the fingerprint of a mixed disorder — never stop at the pH.'
+],
+pimp:[
+ {q:'HCO3 is 12 — what PaCO2 do you expect, and what if it\'s 40?', a:`Winter's: PaCO2 = 1.5×12 + 8 = <span class="hl">26 (±2)</span>. A measured PaCO2 of 40 is far too high → the patient has an <strong>additional respiratory acidosis</strong> (inadequate respiratory compensation), a mixed picture.`},
+ {q:'How do you distinguish RTA from diarrhea in a non-gap acidosis?', a:`The <strong>urine anion gap (UNa + UK − UCl)</strong>. Diarrhea gives a <span class="hl">negative</span> UAG (kidneys ramp up NH4+/Cl− excretion appropriately). RTA gives a <span class="hl">positive</span> UAG (impaired renal acid excretion).`},
+ {q:'When does the osmolar gap matter?', a:`In a high-gap metabolic acidosis of unclear cause — an <strong>elevated osmolar gap (&gt;10)</strong> points to a <span class="hl">toxic alcohol</span> (methanol or ethylene glycol) and should trigger fomepizole and toxicology/dialysis consideration.`}
+],
+links:[
+ {kind:'book', label:'IBCC — Acid–base', sub:'Systematic gas interpretation', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'Acid–base step-by-step', sub:'Search — Strong Medicine acid base ABG', url:'https://www.youtube.com/results?search_query=acid+base+ABG+interpretation+Strong+Medicine+anion+gap'}
+],
+checklist:[
+ 'I can run the 5-step ABG method on any gas',
+ "I can apply Winter's formula and read compensation",
+ 'I can correct the gap for albumin and use the delta ratio',
+ 'I can use urine anion gap and osmolar gap correctly'
+]
+},
+{
+id:8, code:'008', title:'Cardiogenic Shock', type:'Fire', emoji:'🔥',
+color:'#e11d48', tint:'#ffe4e6', badge:'The Ember Badge',
+objectives:[
+ 'Recognize the cold-and-wet patient and stage severity with SCAI',
+ 'Choose inotrope + pressor combinations on trial evidence',
+ 'Know when mechanical circulatory support changes outcomes'
+],
+sections:[
+ {h:'Definition & profiles', body:`<p>Primary cardiac dysfunction → inadequate cardiac output → tissue hypoperfusion despite adequate or elevated filling pressures. Hemodynamically: <span class="hl">SBP &lt;90 (or needing support), CI &lt;2.2, PCWP &gt;15</span> with hypoperfusion.</p>
+ <p><strong>Stevenson/Forrester quadrants</strong> — perfusion (warm/cold) × congestion (wet/dry). Cardiogenic shock is <span class="hl">"cold &amp; wet"</span>: hypoperfused and congested.</p>
+ <p><strong>Causes:</strong> acute MI is #1 (pump failure, or mechanical: papillary muscle rupture, VSD, free-wall rupture), decompensated HF, fulminant myocarditis, arrhythmia, severe valvular disease, and overlaps with obstructive (massive PE, tamponade).</p>`},
+ {h:'SCAI stages', body:`<ul>
+ <li><strong>A</strong> — At risk (e.g., large MI, no shock)</li>
+ <li><strong>B</strong> — Beginning (hypotension/tachycardia, no hypoperfusion)</li>
+ <li><strong>C</strong> — Classic (hypoperfusion needing intervention — pressors/inotropes/mechanical support)</li>
+ <li><strong>D</strong> — Deteriorating (failing to respond, escalating)</li>
+ <li><strong>E</strong> — Extremis (refractory / cardiac arrest)</li>
+ </ul>`},
+ {h:'Management', body:`<ul>
+ <li><strong>Revascularize</strong> if MI — PCI of the culprit only (<span class="hl">CULPRIT-SHOCK</span>: routine multivessel PCI worsened outcomes)</li>
+ <li><strong>Inotrope</strong> — dobutamine or milrinone (DOREMI: no difference)</li>
+ <li><strong>Pressor</strong> — norepinephrine preferred over epinephrine (<span class="hl">OptimaCC</span>: epinephrine caused more refractory shock, lactate, arrhythmia)</li>
+ <li><strong>Optimize volume</strong> — diurese if congested, cautious fluids if underfilled; a PA catheter is increasingly used to guide this in shock</li>
+ <li><strong>Mechanical circulatory support:</strong> IABP (IABP-SHOCK II — no mortality benefit in MI shock); <strong>Impella</strong> (DanGer Shock 2024 — mortality benefit in STEMI cardiogenic shock); VA-ECMO for biventricular/refractory (ECLS-SHOCK — neutral overall)</li>
+ </ul>
+ <p><strong>RV MI / RV failure:</strong> preload-dependent — give cautious fluids, <span class="hl">avoid nitrates and aggressive diuresis</span>, maintain AV synchrony, add inotrope, and offload pulmonary pressures.</p>`}
+],
+numbers:[
+ {val:'CI <2.2', lab:'Cardiac index in shock'},
+ {val:'PCWP >15', lab:'Elevated filling pressure'},
+ {val:'Norepi > epi', lab:'OptimaCC pressor choice'},
+ {val:'Culprit-only', lab:'CULPRIT-SHOCK PCI'}
+],
+pearls:[
+ 'DanGer Shock (2024) was the first trial to show a survival benefit for a percutaneous LV assist device (Impella) in STEMI cardiogenic shock — a genuine practice-changer.',
+ 'In RV infarction the reflex to give nitrates or diurese is dangerous — the RV needs preload; support it with fluids and inotropes instead.'
+],
+pimp:[
+ {q:'Norepinephrine or epinephrine for cardiogenic shock?', a:`<strong>Norepinephrine.</strong> OptimaCC compared them head-to-head and epinephrine caused more <span class="hl">refractory shock, higher lactate, and more arrhythmias</span> with no benefit. Norepi supports pressure with less myocardial oxygen cost.`},
+ {q:'Multivessel disease in MI shock — revascularize everything?', a:`No — <strong>culprit-lesion-only PCI.</strong> CULPRIT-SHOCK showed routine immediate multivessel PCI <span class="hl">increased death and renal replacement therapy</span> versus culprit-only. Stage the non-culprit lesions later.`},
+ {q:'How do you manage RV infarction shock?', a:`Support preload with <span class="hl">cautious fluids</span>, <strong>avoid nitrates and over-diuresis</strong>, maintain AV synchrony (the RV depends on atrial kick), add an inotrope, reduce pulmonary afterload, and revascularize the right coronary.`}
+],
+links:[
+ {kind:'book', label:'IBCC — Cardiogenic shock', sub:'Staging, inotropes, and MCS', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'Cardiogenic shock & MCS', sub:'Search — cardiogenic shock SCAI Impella', url:'https://www.youtube.com/results?search_query=cardiogenic+shock+SCAI+stages+inotropes+mechanical+support'}
+],
+checklist:[
+ 'I can define cardiogenic shock and place a patient on SCAI A–E',
+ 'I can pick pressor + inotrope and cite OptimaCC / DOREMI',
+ 'I can explain CULPRIT-SHOCK and current MCS evidence',
+ 'I can manage RV-infarct shock correctly'
+]
+},
+{
+id:9, code:'009', title:'AKI & Renal Replacement', type:'Water', emoji:'💧',
+color:'#0891b2', tint:'#cffafe', badge:'The Aqua Badge',
+objectives:[
+ 'Stage AKI by KDIGO and localize it pre/intra/post-renal',
+ 'Diagnose and treat hepatorenal syndrome',
+ 'State the true indications and timing for renal replacement therapy'
+],
+sections:[
+ {h:'Staging & localization', body:`<p><strong>KDIGO stages</strong> (creatinine OR urine output):</p>
+ <ul>
+ <li><strong>1:</strong> Cr 1.5–1.9× baseline or ↑≥0.3 mg/dL; UOP &lt;0.5 mL/kg/h × 6–12h</li>
+ <li><strong>2:</strong> Cr 2–2.9×; UOP &lt;0.5 × ≥12h</li>
+ <li><strong>3:</strong> Cr ≥3× or ≥4.0 mg/dL or started on RRT; UOP &lt;0.3 × ≥24h or anuria ≥12h</li>
+ </ul>
+ <p><strong>Localize:</strong></p>
+ <ul>
+ <li><strong>Prerenal</strong> — FeNa &lt;1%, BUN/Cr &gt;20, bland sediment, responds to volume (use FeUrea &lt;35% if on diuretics)</li>
+ <li><strong>Intrinsic (ATN)</strong> — FeNa &gt;2%, muddy-brown granular casts</li>
+ <li><strong>Postrenal</strong> — bladder scan + renal ultrasound for hydronephrosis</li>
+ </ul>`},
+ {h:'Hepatorenal syndrome (HRS-AKI)', body:`<p>Diagnosis of exclusion in cirrhosis with ascites: AKI that does <span class="hl">not improve after 2 days of albumin plus diuretic withdrawal</span>, with no shock, no nephrotoxins, and no structural kidney injury (bland urine, no proteinuria/hematuria).</p>
+ <p><strong>Treatment:</strong> <span class="hl">albumin + a vasoconstrictor</span> — terlipressin (CONFIRM trial) where available, or norepinephrine in the ICU, or midodrine + octreotide + albumin. Definitive therapy is <strong>liver transplant</strong>.</p>`},
+ {h:'When to start RRT — AEIOU', body:`<ul>
+ <li><strong>A</strong>cidosis — severe, refractory metabolic acidosis</li>
+ <li><strong>E</strong>lectrolytes — refractory hyperkalemia</li>
+ <li><strong>I</strong>ntoxications — dialyzable toxins (salicylates, lithium, toxic alcohols, metformin)</li>
+ <li><strong>O</strong>verload — refractory volume overload / pulmonary edema</li>
+ <li><strong>U</strong>remia — encephalopathy, pericarditis, bleeding</li>
+ </ul>
+ <p><strong>Timing:</strong> STARRT-AKI, AKIKI, and IDEAL-ICU all found <span class="hl">no benefit to early/accelerated RRT</span> over a watchful strategy — start for a clear indication, not for a number.</p>
+ <p><strong>Modality:</strong> CRRT for the hemodynamically unstable (better tolerated), intermittent HD for stable patients — no mortality difference. Effluent dose ~20–25 mL/kg/h.</p>`}
+],
+numbers:[
+ {val:'FeNa <1%', lab:'Prerenal'},
+ {val:'FeNa >2%', lab:'ATN'},
+ {val:'FeUrea <35%', lab:'Prerenal on diuretics'},
+ {val:'AEIOU', lab:'RRT indications'}
+],
+pearls:[
+ 'FeNa is unreliable on diuretics, in CKD, contrast nephropathy, and sepsis — switch to FeUrea (<35% suggests prerenal) when diuretics are on board.',
+ 'Trials consistently show early RRT does not save lives — resist starting dialysis purely because the creatinine looks high.'
+],
+pimp:[
+ {q:'Give the indications to start dialysis in AKI.', a:`<strong>AEIOU:</strong> refractory <span class="hl">A</span>cidosis, refractory hyperkalemia (<span class="hl">E</span>lectrolytes), dialyzable <span class="hl">I</span>ntoxications, refractory volume <span class="hl">O</span>verload, and symptomatic <span class="hl">U</span>remia (encephalopathy, pericarditis, bleeding). Timing trials say start for the indication, not the number.`},
+ {q:'How do you diagnose and treat hepatorenal syndrome?', a:`Cirrhosis + AKI that <strong>fails to improve after 2 days of albumin and stopping diuretics</strong>, with no shock, nephrotoxins, or structural injury. Treat with <span class="hl">albumin + a vasoconstrictor (terlipressin or norepinephrine)</span>; liver transplant is definitive.`},
+ {q:'Patient is on furosemide — is FeNa still useful?', a:`No — diuretics increase sodium excretion and falsely elevate FeNa. Use <strong>FeUrea</strong> instead; a value <span class="hl">&lt;35%</span> still points to a prerenal state because urea handling is less affected by loop diuretics.`}
+],
+links:[
+ {kind:'book', label:'IBCC — AKI & RRT', sub:'Workup, indications, modality', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'AKI & CRRT explained', sub:'Search — AKI KDIGO CRRT ICU Advantage', url:'https://www.youtube.com/results?search_query=acute+kidney+injury+CRRT+KDIGO+ICU+Advantage'}
+],
+checklist:[
+ 'I can stage AKI by KDIGO and localize it',
+ 'I can diagnose and treat HRS-AKI',
+ 'I can list AEIOU and the RRT-timing evidence',
+ 'I know when to trust FeNa vs FeUrea'
+]
+},
+{
+id:10, code:'010', title:'DKA & HHS', type:'Sugar', emoji:'🍬',
+color:'#db2777', tint:'#fce7f3', badge:'The Sweet Badge',
+objectives:[
+ 'Separate DKA from HHS and treat with fluids, insulin, potassium',
+ 'Time potassium and dextrose correctly to avoid disasters',
+ 'Treat to gap closure and catch euglycemic DKA'
+],
+sections:[
+ {h:'DKA vs HHS', body:`<div class="scroll-x"><table class="tbl">
+ <tr><th></th><th>DKA</th><th>HHS</th></tr>
+ <tr><td>Glucose</td><td>&gt;250 (can be normal — euglycemic)</td><td>usually &gt;600</td></tr>
+ <tr><td>Ketones</td><td>present (β-hydroxybutyrate)</td><td>minimal</td></tr>
+ <tr><td>Acidosis</td><td>gap acidosis, pH &lt;7.3</td><td>pH &gt;7.3</td></tr>
+ <tr><td>Osmolality</td><td>variable</td><td>&gt;320, profound dehydration</td></tr>
+ </table></div>
+ <p>HHS occurs in older, comorbid patients and carries <strong>higher mortality</strong>; DKA is more acute.</p>`},
+ {h:'The three pillars — fluids, insulin, potassium', body:`<p><strong>1. Fluids first.</strong> Isotonic crystalloid ~1–1.5 L in the first hour, then adjust by corrected sodium (high/normal Na → 0.45%; low Na → 0.9%). <span class="hl">Add D5 when glucose reaches ~200 (DKA) or 250–300 (HHS)</span> so you can keep the insulin running until the gap closes.</p>
+ <p><strong>2. Potassium BEFORE insulin if K &lt;3.3.</strong> Insulin drives potassium intracellularly — giving it into a hypokalemic patient can cause <span class="hl">fatal arrhythmia</span>. Hold insulin, replete to &gt;3.3 first. If K 3.3–5.3, give insulin and add K to fluids. If K &gt;5.3, no K, recheck.</p>
+ <p><strong>3. Insulin.</strong> IV regular insulin infusion at 0.1 U/kg/h (a bolus is optional and increasingly skipped). Aim to drop glucose 50–75/h. In DKA, <span class="hl">treat until the anion gap closes</span>, not until glucose normalizes — overlap subcutaneous long-acting insulin 1–2h before stopping the drip.</p>
+ <p><strong>Bicarbonate</strong> only if pH &lt;6.9. Replace phosphate only if severe (&lt;1) or symptomatic.</p>`},
+ {h:'Precipitants & pitfalls', body:`<p><strong>Find the trigger — the 5 I's:</strong> Infection, Infarction (MI), Insulin lack (nonadherence), Iatrogenic (steroids), Intoxication / pregnancy / new-onset diabetes.</p>
+ <p><strong>Euglycemic DKA:</strong> <span class="hl">SGLT2 inhibitors</span>, pregnancy, starvation, alcohol — the patient is ketoacidotic with near-normal glucose. Don't be falsely reassured by the glucose.</p>
+ <p><strong>Pitfalls:</strong> stopping the drip before the gap closes; letting potassium crash; hypoglycemia (that's why you add dextrose, not stop insulin); over-rapid osmolar shifts (cerebral edema, especially in the young).</p>`}
+],
+numbers:[
+ {val:'0.1 U/kg/h', lab:'Insulin infusion'},
+ {val:'K <3.3', lab:'Hold insulin, replete first'},
+ {val:'Glucose ~200', lab:'Add dextrose (DKA)'},
+ {val:'Gap closure', lab:'Endpoint, not glucose'}
+],
+pearls:[
+ 'The single most dangerous error is giving insulin to a hypokalemic DKA patient — always check that K is >3.3 first.',
+ 'Euglycemic DKA on SGLT2 inhibitors is easy to miss because the glucose looks fine — check the gap and ketones.'
+],
+pimp:[
+ {q:'Why must you check potassium before starting insulin?', a:`Insulin shifts potassium <strong>into cells</strong>. Total-body potassium is already depleted in DKA even when serum K looks normal, so insulin can precipitate <span class="hl">life-threatening hypokalemia and arrhythmia</span>. If K &lt;3.3, hold insulin and replete first.`},
+ {q:'When do you add dextrose, and when do you stop the insulin drip?', a:`Add <strong>D5</strong> when glucose falls to ~200 (DKA) so you can keep clearing ketones without hypoglycemia. Stop the drip only when the <span class="hl">anion gap has closed</span> and the patient is eating — overlapping subcutaneous basal insulin 1–2 hours before, or the DKA rebounds.`},
+ {q:'A patient on empagliflozin has a gap acidosis but glucose of 180 — what is it?', a:`<strong>Euglycemic DKA.</strong> SGLT2 inhibitors cause ketoacidosis with only mildly elevated glucose because they promote glycosuria and ketogenesis. Treat as DKA — fluids, insulin with dextrose, potassium — and hold the SGLT2 inhibitor.`}
+],
+links:[
+ {kind:'book', label:'IBCC — DKA', sub:'Protocolized management', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'DKA & HHS management', sub:'Search — DKA HHS management potassium', url:'https://www.youtube.com/results?search_query=DKA+HHS+management+insulin+potassium+anion+gap'}
+],
+checklist:[
+ 'I can contrast DKA and HHS',
+ 'I can run fluids/insulin/potassium and time each correctly',
+ 'I can treat to gap closure and transition to SC insulin',
+ 'I can recognize euglycemic DKA and the 5 I precipitants'
+]
+}
+,
+{
+id:11, code:'011', title:'Electrolyte Emergencies', type:'Rock', emoji:'🧂',
+color:'#ea580c', tint:'#ffedd5', badge:'The Ion Badge',
+objectives:[
+ 'Run the hyperkalemia algorithm in the right order',
+ 'Correct sodium slowly and avoid osmotic demyelination',
+ 'Know why magnesium is the hidden fixer'
+],
+sections:[
+ {h:'Hyperkalemia', body:`<p><strong>ECG evolution:</strong> peaked T waves → PR prolongation → widened QRS → sine wave → arrest. Treat by ECG and level, in this order:</p>
+ <ol>
+ <li><strong>Stabilize the myocardium — calcium</strong> (gluconate or chloride). Doesn't lower K, but protects the heart immediately.</li>
+ <li><strong>Shift K into cells</strong> — insulin + glucose, high-dose nebulized albuterol, (bicarbonate if acidotic)</li>
+ <li><strong>Remove K</strong> — loop diuretics, GI binders (patiromer, sodium zirconium), and <span class="hl">dialysis</span> (definitive in renal failure/refractory)</li>
+ </ol>`},
+ {h:'Sodium disorders', body:`<p><strong>Hyponatremia — correct slowly:</strong> max <span class="hl">~6–8 mEq/L per 24h</span> to avoid <strong>osmotic demyelination (central pontine myelinolysis)</strong>. Highest-risk patients: chronic hyponatremia, alcohol use, malnutrition, hypokalemia, advanced liver disease.</p>
+ <ul>
+ <li>Severe symptoms (seizure/coma): <span class="hl">3% saline 100–150 mL bolus</span>, repeat to raise Na ~4–6 acutely, then stop</li>
+ <li>SIADH (euvolemic, urine osm &gt;100, urine Na &gt;30): fluid restrict, salt tabs, ± vaptans/urea</li>
+ <li>Hypovolemic: isotonic saline. Hypervolemic (HF/cirrhosis): restrict + diurese</li>
+ <li>Over-correcting? Re-lower with D5W ± DDAVP clamp</li>
+ </ul>
+ <p><strong>Hypernatremia:</strong> free-water deficit; correct at max ~10–12 mEq/L per 24h to avoid cerebral edema.</p>`},
+ {h:'The quiet ones', body:`<p><strong>Magnesium</strong> is required to correct <span class="hl">refractory hypokalemia and hypocalcemia</span> — if potassium or calcium won't come up, check and replace Mg. Hypomagnesemia also drives torsades.</p>
+ <p><strong>Hypocalcemia:</strong> correct calcium for albumin (add 0.8 mg/dL per 1 g/dL albumin below 4), or check ionized. <strong>Hypophosphatemia:</strong> classic in refeeding — can cause respiratory muscle weakness.</p>`}
+],
+numbers:[
+ {val:'Calcium first', lab:'Hyperkalemia step 1'},
+ {val:'6–8 / 24h', lab:'Max Na correction'},
+ {val:'3% 100–150 mL', lab:'Symptomatic hypoNa bolus'},
+ {val:'Check Mg', lab:'Refractory K/Ca'}
+],
+pearls:[
+ 'Calcium stabilizes the membrane but does not lower potassium — you still need to shift and remove it, or the K rebounds.',
+ 'If potassium keeps dropping despite repletion, the culprit is almost always unmeasured hypomagnesemia.'
+],
+pimp:[
+ {q:'Walk me through hyperkalemia management, in order.', a:`<strong>1) Calcium</strong> to stabilize the myocardium (immediate, doesn't lower K). <strong>2) Shift</strong> with insulin + glucose and high-dose albuterol (± bicarb if acidotic). <strong>3) Remove</strong> via loop diuretics, GI binders, and <span class="hl">dialysis</span> if refractory or in renal failure.`},
+ {q:'How fast can you correct sodium and why the limit?', a:`No more than <span class="hl">~6–8 mEq/L in 24 hours</span>. Correcting chronic hyponatremia too quickly causes <strong>osmotic demyelination syndrome / central pontine myelinolysis</strong> — irreversible neurologic injury. Highest risk in alcohol use, malnutrition, hypokalemia, and liver disease.`},
+ {q:'Potassium won\'t rise despite aggressive repletion — what are you missing?', a:`<strong>Magnesium.</strong> Hypomagnesemia promotes renal potassium wasting and blocks correction. Check and replace Mg, and the potassium (and any refractory hypocalcemia) will follow.`}
+],
+links:[
+ {kind:'book', label:'IBCC — Electrolytes', sub:'Hyper-K, Na disorders, Mg', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'Hyperkalemia & hyponatremia', sub:'Search — hyperkalemia hyponatremia management', url:'https://www.youtube.com/results?search_query=hyperkalemia+hyponatremia+management+ICU+correction'}
+],
+checklist:[
+ 'I can run the hyperkalemia algorithm in order',
+ 'I can correct Na safely and name ODS risk factors',
+ 'I can dose 3% saline for symptomatic hyponatremia',
+ 'I know when magnesium is the fix'
+]
+},
+{
+id:12, code:'012', title:'Sedation, Analgesia & Delirium', type:'Dream', emoji:'😴',
+color:'#6366f1', tint:'#e0e7ff', badge:'The Dream Badge',
+objectives:[
+ 'Target light sedation and treat pain first',
+ 'Choose sedatives by their real risks (delirium, PRIS, hemodynamics)',
+ 'Screen and manage delirium with the ABCDEF bundle'
+],
+sections:[
+ {h:'Analgesia-first, light sedation', body:`<p><strong>Treat pain before sedation</strong> ("analgosedation") — untreated pain drives agitation. Assess with CPOT/BPS; use fentanyl, hydromorphone, or morphine.</p>
+ <p><strong>Sedation target:</strong> the <span class="hl">RASS</span> scale runs −5 (unarousable) to +4 (combative). Aim for <span class="hl">light sedation, RASS 0 to −2</span> — it shortens ventilation and reduces delirium versus deep sedation.</p>`},
+ {h:'The agents & their pitfalls', body:`<ul>
+ <li><strong>Propofol</strong> — fast on/off, causes hypotension; watch for <span class="hl">propofol infusion syndrome (PRIS)</span>: metabolic acidosis, rhabdomyolysis, arrhythmia, rising triglycerides — at high dose/prolonged use</li>
+ <li><strong>Dexmedetomidine</strong> — α2 agonist, <span class="hl">no respiratory depression, less delirium</span>; causes bradycardia and hypotension</li>
+ <li><strong>Benzodiazepines</strong> (midazolam/lorazepam) — <span class="hl">avoid as routine sedation; they increase delirium</span>. Reserve for alcohol withdrawal, status epilepticus, or when deep sedation is truly required</li>
+ </ul>`},
+ {h:'Delirium & the ABCDEF bundle', body:`<p><strong>Screen with CAM-ICU:</strong> acute onset or fluctuating course + inattention + (altered level of consciousness OR disorganized thinking). Hypoactive delirium is common and easily missed.</p>
+ <p><strong>Treatment is mostly non-pharmacologic:</strong> reorient, mobilize early, normalize sleep, remove lines/restraints, restore glasses/hearing aids, treat pain, and minimize benzodiazepines/deliriogenic drugs. <span class="hl">Antipsychotics do not shorten delirium</span> (MIND-USA: haloperidol and ziprasidone were no better than placebo) — use them only for dangerous agitation.</p>
+ <p><strong>ABCDEF bundle:</strong> Assess/manage pain · Both SAT + SBT (paired awakening + breathing trials) · Choice of sedation · Delirium monitoring · Early mobility · Family engagement. Paired SAT/SBT (the ABC "Wake Up and Breathe" trial) reduces ventilator days and mortality.</p>`}
+],
+numbers:[
+ {val:'RASS 0 to −2', lab:'Light-sedation goal'},
+ {val:'CAM-ICU', lab:'Delirium screen'},
+ {val:'Avoid benzos', lab:'They cause delirium'},
+ {val:'SAT + SBT', lab:'Daily paired trials'}
+],
+pearls:[
+ 'MIND-USA showed antipsychotics do not treat or shorten ICU delirium — the evidence-based approach is the non-pharmacologic bundle plus removing benzodiazepines.',
+ 'Propofol infusion syndrome presents as an unexplained metabolic acidosis with rising lactate, CK, and triglycerides — stop propofol immediately if you see it.'
+],
+pimp:[
+ {q:'What is your sedation target and why light?', a:`<span class="hl">RASS 0 to −2</span> — light sedation. Deep sedation prolongs mechanical ventilation and ICU stay and increases delirium and mortality. Daily awakening trials (SAT) paired with breathing trials (SBT) get patients off the ventilator faster.`},
+ {q:'Why avoid benzodiazepines for routine ICU sedation?', a:`They are <strong>independently deliriogenic</strong> and delirium is linked to worse outcomes and long-term cognitive impairment. Prefer propofol or dexmedetomidine; reserve benzodiazepines for alcohol/sedative withdrawal, status epilepticus, or refractory deep-sedation needs.`},
+ {q:'Do antipsychotics treat ICU delirium?', a:`No. <strong>MIND-USA</strong> found haloperidol and ziprasidone did not reduce delirium duration versus placebo. Manage delirium with the <span class="hl">non-pharmacologic bundle</span> (reorientation, mobility, sleep, sensory aids, pain control, benzo minimization); reserve antipsychotics for distressing agitation or safety.`}
+],
+links:[
+ {kind:'book', label:'IBCC — Sedation & delirium', sub:'PADIS + ABCDEF in practice', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'ICU sedation & delirium', sub:'Search — ICU sedation delirium RASS CAM-ICU', url:'https://www.youtube.com/results?search_query=ICU+sedation+delirium+RASS+CAM-ICU+ABCDEF+bundle'}
+],
+checklist:[
+ 'I can set a RASS target and justify light sedation',
+ 'I can choose sedatives by their risks and recognize PRIS',
+ 'I can screen delirium with CAM-ICU',
+ 'I can run the ABCDEF bundle and cite MIND-USA'
+]
+},
+{
+id:13, code:'013', title:'GI Bleed & Liver Failure', type:'Blood', emoji:'🩸',
+color:'#b91c1c', tint:'#fee2e2', badge:'The Crimson Badge',
+objectives:[
+ 'Resuscitate GI bleeding with a restrictive strategy',
+ 'Give the cirrhotic-specific bundle: antibiotics, octreotide, early endoscopy',
+ 'Manage SBP, hepatic encephalopathy, HRS, and acute liver failure'
+],
+sections:[
+ {h:'Acute GI bleed', body:`<p><strong>Resuscitate:</strong> two large-bore IVs, and transfuse to a <span class="hl">restrictive Hgb goal &gt;7</span> (Villanueva: restrictive transfusion improved survival vs liberal in acute upper GI bleed; use a higher threshold in active coronary ischemia).</p>
+ <p><strong>Variceal bleed (cirrhotic):</strong></p>
+ <ul>
+ <li><strong>Octreotide</strong> infusion (splanchnic vasoconstriction)</li>
+ <li><span class="hl">Prophylactic ceftriaxone</span> — antibiotics reduce rebleeding, SBP, and mortality in cirrhotic GI bleed</li>
+ <li>Urgent <strong>endoscopy with band ligation</strong> within 12h</li>
+ <li>Early/pre-emptive <strong>TIPS</strong> for high-risk bleeds (Child B with active bleeding, or Child C)</li>
+ <li>Balloon tamponade (Blakemore) as a temporizing bridge in exsanguinating bleeds</li>
+ </ul>
+ <p><strong>Non-variceal (peptic ulcer):</strong> IV PPI, endoscopic hemostasis, treat H. pylori.</p>`},
+ {h:'Decompensated cirrhosis complications', body:`<ul>
+ <li><strong>SBP</strong> — diagnose by ascitic fluid <span class="hl">PMN ≥250</span>. Treat with cefotaxime/ceftriaxone <em>plus</em> <span class="hl">albumin 1.5 g/kg day 1 and 1 g/kg day 3</span> (reduces HRS and mortality)</li>
+ <li><strong>Hepatic encephalopathy</strong> — look for precipitants (GI bleed, infection, constipation, electrolytes, TIPS, sedatives). Treat with lactulose titrated to 2–3 bowel movements/day, add rifaximin. Ammonia levels aren't needed to diagnose</li>
+ <li><strong>HRS-AKI</strong> — albumin + vasoconstrictor (terlipressin/norepinephrine); transplant is definitive</li>
+ <li><strong>Ascites</strong> — spironolactone + furosemide; large-volume paracentesis with albumin (6–8 g per liter removed if &gt;5 L)</li>
+ </ul>`},
+ {h:'Acute liver failure', body:`<p>Encephalopathy + coagulopathy (INR ≥1.5) <em>without</em> pre-existing cirrhosis. <strong>Acetaminophen is the leading cause</strong> — give <span class="hl">N-acetylcysteine</span> (and NAC benefits even non-acetaminophen ALF). Watch for cerebral edema in grade 3–4 encephalopathy, and refer early for transplant (King's College criteria). Other causes: viral, drug, autoimmune, Wilson, Budd-Chiari.</p>`}
+],
+numbers:[
+ {val:'Hgb >7', lab:'Restrictive transfusion'},
+ {val:'Ceftriaxone', lab:'All cirrhotic GI bleeds'},
+ {val:'PMN ≥250', lab:'SBP diagnosis'},
+ {val:'1.5 & 1 g/kg', lab:'Albumin in SBP (d1, d3)'}
+],
+pearls:[
+ 'Every cirrhotic with a GI bleed gets prophylactic ceftriaxone — it independently lowers rebleeding and mortality, even before you scope.',
+ 'In acute liver failure the reflex is N-acetylcysteine — it helps even when acetaminophen is not the cause.'
+],
+pimp:[
+ {q:'What do you give a cirrhotic with a GI bleed beyond blood?', a:`<strong>Octreotide</strong> (splanchnic vasoconstriction), <span class="hl">prophylactic ceftriaxone</span> (reduces rebleeding, SBP, mortality), and <strong>urgent endoscopy with band ligation</strong> within 12h — with early TIPS considered for high-risk patients. Transfuse to a restrictive Hgb &gt;7.`},
+ {q:'How do you diagnose and treat SBP?', a:`Ascitic fluid <span class="hl">neutrophil count ≥250/mm³</span>. Treat with a third-generation cephalosporin <strong>plus albumin (1.5 g/kg on day 1, 1 g/kg on day 3)</strong>, which reduces hepatorenal syndrome and mortality. Start secondary prophylaxis afterward.`},
+ {q:'Transfusion threshold in acute upper GI bleeding?', a:`<strong>Restrictive — transfuse for Hgb &lt;7</strong> targeting &gt;7. Villanueva showed a restrictive strategy improved survival and reduced rebleeding versus liberal transfusion (over-transfusion raises portal pressure). Use a higher threshold only with active cardiac ischemia.`}
+],
+links:[
+ {kind:'book', label:'IBCC — GI bleed & liver failure', sub:'Variceal bleed, SBP, HE, ALF', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'Variceal bleed & cirrhosis in ICU', sub:'Search — variceal bleed SBP hepatic encephalopathy', url:'https://www.youtube.com/results?search_query=variceal+bleed+cirrhosis+SBP+hepatic+encephalopathy+management'}
+],
+checklist:[
+ 'I can resuscitate GI bleed with a restrictive strategy',
+ 'I can give the full cirrhotic variceal-bleed bundle',
+ 'I can diagnose/treat SBP with the albumin dosing',
+ 'I can manage HE and start NAC in acute liver failure'
+]
+},
+{
+id:14, code:'014', title:'Neurocritical Care', type:'Psychic', emoji:'🧠',
+color:'#9333ea', tint:'#f3e8ff', badge:'The Mind Badge',
+objectives:[
+ 'Run the status epilepticus ladder without delay',
+ 'Manage raised ICP in tiers and target CPP',
+ 'Deliver modern post-cardiac-arrest care and time prognostication'
+],
+sections:[
+ {h:'Status epilepticus', body:`<p><strong>Definition:</strong> ≥5 minutes of continuous seizure, or ≥2 seizures without recovery of consciousness between them. Move fast:</p>
+ <ol>
+ <li><strong>Emergent — benzodiazepine:</strong> lorazepam 0.1 mg/kg IV, or IM midazolam, or diazepam</li>
+ <li><strong>Urgent control:</strong> <span class="hl">levetiracetam, fosphenytoin, or valproate</span> (ESETT — all three roughly equivalent)</li>
+ <li><strong>Refractory:</strong> intubate + continuous infusion (propofol, midazolam, or ketamine) with continuous EEG. Find and treat the cause.</li>
+ </ol>
+ <p>Get an EEG for any unexplained coma — <strong>nonconvulsive status</strong> is easy to miss.</p>`},
+ {h:'Raised ICP', body:`<p><strong>Signs:</strong> Cushing triad (hypertension, bradycardia, irregular respirations), falling GCS, pupil changes, posturing. Target <span class="hl">CPP 60–70</span> (CPP = MAP − ICP). Manage in tiers:</p>
+ <ul>
+ <li>Head of bed 30°, neck midline, treat pain/fever/seizure, normocapnia (PaCO2 35–40)</li>
+ <li><strong>Hyperosmolar therapy</strong> — hypertonic saline or mannitol</li>
+ <li>CSF drainage via EVD</li>
+ <li>Temporary hyperventilation to PaCO2 30–35 <span class="hl">only as a brief bridge for active herniation</span></li>
+ <li>Refractory: decompressive craniectomy or barbiturate coma</li>
+ </ul>
+ <p><strong>Mannitol vs hypertonic saline:</strong> mannitol causes osmotic diuresis (watch volume depletion and renal function); hypertonic saline also expands volume, so it's preferred if the patient is hypotensive.</p>`},
+ {h:'Post-cardiac-arrest care', body:`<ul>
+ <li><strong>Targeted temperature management</strong> — control temperature and <span class="hl">avoid fever</span>. TTM2 showed a target of 33°C was no better than normothermia (37.5°C) with active fever prevention; keep controlled 32–37.5°C</li>
+ <li>Maintain MAP/perfusion, treat the cause (cath lab for STEMI/suspected cardiac cause)</li>
+ <li>Avoid hyperoxia and hypoxia, and hypo-/hypercapnia</li>
+ <li><strong>Delay neuroprognostication ≥72h</strong> and use multiple modalities (exam, EEG, SSEPs, NSE, imaging) to avoid a self-fulfilling prophecy</li>
+ </ul>
+ <p><strong>Acute ischemic stroke</strong> (pearl for your field): thrombolysis window with tPA/tenecteplase, thrombectomy for large-vessel occlusion (up to 24h with perfusion imaging), permissive hypertension unless lysing (then keep &lt;185/110). A pontine stroke threatens the airway and can cause locked-in syndrome.</p>`}
+],
+numbers:[
+ {val:'≥5 min', lab:'Status epilepticus'},
+ {val:'CPP 60–70', lab:'Cerebral perfusion target'},
+ {val:'CPP = MAP−ICP', lab:'Perfusion equation'},
+ {val:'≥72h', lab:'Delay prognostication'}
+],
+pearls:[
+ 'Get an EEG on any unexplained coma — nonconvulsive status epilepticus is a frequently missed, treatable cause.',
+ 'TTM2 reframed post-arrest cooling: the priority is aggressive fever avoidance and controlled normothermia, not deep hypothermia.'
+],
+pimp:[
+ {q:'Walk the status epilepticus ladder.', a:`<strong>1) Benzodiazepine</strong> (lorazepam IV / IM midazolam) at adequate dose. <strong>2) Urgent second agent</strong> — <span class="hl">levetiracetam, fosphenytoin, or valproate</span> (ESETT showed equivalence). <strong>3) Refractory</strong> → intubate and start a continuous anesthetic infusion (propofol/midazolam/ketamine) with cEEG, and hunt for the cause.`},
+ {q:'Mannitol or hypertonic saline for raised ICP?', a:`Both lower ICP osmotically. <strong>Mannitol</strong> causes diuresis — avoid if the patient is hypovolemic/hypotensive or in renal failure. <strong>Hypertonic saline</strong> also <span class="hl">expands intravascular volume</span>, making it preferable in the hypotensive or hypovolemic patient. Target CPP 60–70.`},
+ {q:'What temperature do you target after cardiac arrest now?', a:`Controlled normothermia with <strong>aggressive fever prevention</strong> (roughly 32–37.5°C). TTM2 showed hypothermia at 33°C was <span class="hl">no better than normothermia</span> at 37.5°C, so the emphasis shifted to avoiding fever. Delay neuroprognostication ≥72h and use multiple modalities.`}
+],
+links:[
+ {kind:'book', label:'IBCC — Neurocritical care', sub:'Status, ICP, post-arrest', url:'https://emcrit.org/ibcc/toc/'},
+ {kind:'yt', label:'Status epilepticus & ICP', sub:'Search — status epilepticus raised ICP management', url:'https://www.youtube.com/results?search_query=status+epilepticus+raised+intracranial+pressure+management+ICU'}
+],
+checklist:[
+ 'I can run the status epilepticus ladder and cite ESETT',
+ 'I can manage raised ICP in tiers and target CPP',
+ 'I can choose mannitol vs hypertonic saline',
+ 'I can deliver post-arrest care and time prognostication (TTM2)'
+]
+}
+];
+
+/* ============ CRAM SHEET DATA ============ */
+const CRAM=[
+{sec:'Numbers Dr. Garcia expects instantly', blocks:[
+ {t:'Ventilator', c:'#0ea5e9', items:['Tidal volume <code>6 mL/kg PBW</code>','Plateau <code>&lt;30</code>, driving pressure <code>&lt;15</code>','PBW men <code>50 + 2.3(in − 60)</code>; women <code>45.5 + 2.3(in − 60)</code>','SpO2 target <code>88–96%</code>','Prone if <code>P/F &lt;150</code>, for <code>≥16 h/day</code>']},
+ {t:'Shock & sepsis', c:'#f59e0b', items:['MAP target <code>≥65</code>','Fluids <code>30 mL/kg</code> crystalloid','Vasopressin fixed <code>0.03 U/min</code>','Hydrocortisone <code>200 mg/day</code>','Fluid-responsive if PPV/SVV <code>&gt;13%</code>']},
+ {t:'Acid–base', c:'#7c3aed', items:["Winter's <code>PaCO2 = 1.5×HCO3 + 8 ±2</code>",'AG <code>Na − (Cl + HCO3)</code>, normal 8–12','Albumin correction <code>+2.5 per 1 g/dL &lt;4</code>','Delta ratio <code>(AG−12)/(24−HCO3)</code>','&lt;1 = added non-gap · &gt;2 = added alkalosis']},
+ {t:'Renal & endocrine', c:'#0891b2', items:['FeNa <code>&lt;1%</code> prerenal · <code>&gt;2%</code> ATN','FeUrea <code>&lt;35%</code> if on diuretics','Insulin <code>0.1 U/kg/h</code>; hold if K <code>&lt;3.3</code>','Add D5 at glucose <code>~200</code>; treat to <b>gap closure</b>','Glucose target <code>140–180</code>']},
+ {t:'Neuro & liver', c:'#9333ea', items:['CPP <code>60–70</code> = MAP − ICP','Status epilepticus = <code>≥5 min</code>','Prognosticate after <code>≥72h</code>','Na correction <code>≤6–8 mEq/24h</code>','SBP if ascitic PMN <code>≥250</code>; albumin <code>1.5 then 1 g/kg</code>','Transfuse GI bleed to <code>Hgb &gt;7</code>']}
+]},
+{sec:'Mnemonics to have on the tip of your tongue', blocks:[
+ {t:'FASTHUG-MAIDENS', c:'#16a34a', items:['Feeding · Analgesia · Sedation · Thromboprophylaxis · Head of bed · Ulcer ppx · Glucose','Medications · Assess lines · Indications for abx · Delirium · Electrolytes · Nutrition · SBT/Skin']},
+ {t:'DOPES — vent crisis', c:'#0ea5e9', items:['<b>D</b>isplacement of tube','<b>O</b>bstruction / mucus plug','<b>P</b>neumothorax','<b>E</b>quipment failure','<b>S</b>tacking (auto-PEEP) → disconnect and bag']},
+ {t:'AEIOU — start RRT', c:'#0891b2', items:['<b>A</b>cidosis (refractory)','<b>E</b>lectrolytes (refractory hyper-K)','<b>I</b>ntoxications (dialyzable)','<b>O</b>verload (refractory)','<b>U</b>remia (encephalopathy, pericarditis, bleeding)']},
+ {t:'GOLD MARK — high anion gap', c:'#7c3aed', items:['<b>G</b>lycols · <b>O</b>xoproline · <b>L</b>-lactate · <b>D</b>-lactate','<b>M</b>ethanol · <b>A</b>spirin · <b>R</b>enal failure · <b>K</b>etoacidosis']},
+ {t:"5 I's — DKA precipitants", c:'#db2777', items:['<b>I</b>nfection · <b>I</b>nfarction · <b>I</b>nsulin lack','<b>I</b>atrogenic (steroids) · <b>I</b>ntoxication / pregnancy']},
+ {t:'ABCDEF bundle', c:'#6366f1', items:['<b>A</b>ssess pain · <b>B</b>oth SAT + SBT · <b>C</b>hoice of sedation','<b>D</b>elirium monitoring · <b>E</b>arly mobility · <b>F</b>amily engagement']}
+]},
+{sec:'Trials that make you sound like a fellow', blocks:[
+ {t:'Ventilation & ARDS', c:'#2563eb', items:['<b>ARDSNet</b> — 6 vs 12 mL/kg cut mortality','<b>PROSEVA</b> — proning ≥16h/day if P/F &lt;150 cut mortality','<b>Amato</b> — driving pressure &lt;15 best predicts survival','<b>ACURASYS / ROSE</b> — paralysis: benefit then neutral','<b>EOLIA</b> — VV-ECMO in severe refractory ARDS']},
+ {t:'Sepsis & fluids', c:'#65a30d', items:['<b>SMART</b> — balanced crystalloid beats saline (kidney outcomes)','<b>ADRENAL / APROCCHSS</b> — steroids: faster reversal / mortality','<b>SEPSISPAM</b> — higher MAP helps only chronic HTN','<b>ATHOS-3</b> — angiotensin II in refractory shock','<b>De Backer</b> — norepi over dopamine']},
+ {t:'Cardiac', c:'#e11d48', items:['<b>CULPRIT-SHOCK</b> — culprit-only PCI','<b>OptimaCC</b> — norepi over epi in cardiogenic shock','<b>DOREMI</b> — milrinone = dobutamine','<b>IABP-SHOCK II</b> — no benefit from IABP','<b>DanGer Shock</b> — Impella survival benefit in STEMI shock']},
+ {t:'Renal, neuro, sedation', c:'#9333ea', items:['<b>STARRT-AKI / AKIKI</b> — no benefit to early RRT','<b>TTM2</b> — 33°C no better than normothermia; avoid fever','<b>ESETT</b> — levetiracetam = fosphenytoin = valproate','<b>MIND-USA</b> — antipsychotics do not treat delirium','<b>NICE-SUGAR</b> — tight glucose control causes harm','<b>Villanueva</b> — restrictive transfusion in GI bleed']}
+]},
+{sec:'Three-second reflexes', blocks:[
+ {t:'If you see…', c:'#ea580c', items:['<b>↑Peak, normal plateau</b> → resistance (plug, bronchospasm, kinked tube)','<b>↑Peak, ↑plateau</b> → compliance (PTX, edema, ARDS, mainstem)','<b>COPD + hypotension on vent</b> → auto-PEEP, disconnect','<b>Wide gap + normal pH</b> → mixed disorder, run delta ratio','<b>K won\'t rise</b> → check magnesium','<b>Gap acidosis + normal glucose</b> → euglycemic DKA (SGLT2)','<b>Cirrhotic GI bleed</b> → ceftriaxone before you scope','<b>Unexplained coma</b> → EEG for nonconvulsive status','<b>High SvO2 in sepsis</b> → impaired extraction, not adequacy','<b>Septic shock still on pressors</b> → add hydrocortisone']}
+]}
+];
+
+/* ============ HELPERS ============ */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const key=(m,i)=>'m'+m+'s'+i;
+const isOn=(m,i)=>!!state.checks[key(m,i)];
+const modDone=m=>m.checklist.every((_,i)=>isOn(m.id,i));
+const modCount=m=>m.checklist.filter((_,i)=>isOn(m.id,i)).length;
+
+function totals(){
+  let skills=0,badges=0,total=0;
+  MODULES.forEach(m=>{total+=m.checklist.length;skills+=modCount(m);if(modDone(m))badges++;});
+  const xp=skills*XP_PER_SKILL+badges*BADGE_BONUS;
+  return {skills,badges,total,xp,pct:Math.round(skills/total*100)};
+}
+function levelFor(xp){
+  let idx=0;
+  for(let i=0;i<LEVELS.length;i++) if(xp>=LEVELS[i].xp) idx=i;
+  const cur=LEVELS[idx], next=LEVELS[idx+1];
+  const span=next?next.xp-cur.xp:1, into=next?xp-cur.xp:1;
+  return {idx,cur,next,pct:next?Math.min(100,Math.round(into/span*100)):100};
+}
+
+/* ============ RENDER: DEX GRID ============ */
+function renderDex(){
+  $('#dexGrid').innerHTML=MODULES.map(m=>{
+    const c=modCount(m),t=m.checklist.length,done=c===t;
+    return `<button class="dexcard${done?' mastered':''}" data-open="${m.id}" style="--tc:${m.color};--tcl:${m.tint}">
+      <div class="banner">
+        <div class="num">No. ${m.code}</div>
+        <span class="type-pill">${esc(m.type)}</span>
+        <div class="emoji">${m.emoji}</div>
+        <h3>${esc(m.title)}</h3>
+      </div>
+      <div class="medallion">🏅</div>
+      <div class="foot">
+        <div class="prog"><i style="width:${c/t*100}%"></i></div>
+        <span class="cnt">${c}/${t}</span>
+      </div>
+    </button>`;
+  }).join('');
+  $$('[data-open]').forEach(b=>b.onclick=()=>openModule(+b.dataset.open));
+}
+
+/* ============ RENDER: MODULE ============ */
+function openModule(id){
+  const m=MODULES.find(x=>x.id===id), i=MODULES.indexOf(m);
+  const prev=MODULES[i-1], next=MODULES[i+1];
+  const v=$('#view-module');
+  v.style.setProperty('--tc',m.color); v.style.setProperty('--tcl',m.tint);
+  v.innerHTML=`
+  <div class="back-row">
+    <button class="btn" data-back>← All modules</button>
+    ${prev?`<button class="btn" data-go="${prev.id}">◀ ${esc(prev.title)}</button>`:''}
+    ${next?`<button class="btn nav" data-go="${next.id}">${esc(next.title)} ▶</button>`:''}
+  </div>
+  <div class="mod-banner">
+    <div class="big-emoji">${m.emoji}</div>
+    <div class="num">No. ${m.code}</div>
+    <h2>${esc(m.title)}</h2>
+    <span class="type-pill">${esc(m.type)} type · ${esc(m.badge)}</span>
+  </div>
+
+  <div class="panel">
+    <h3><span class="ic">🎯</span>What you'll own after this</h3>
+    <ul class="obj">${m.objectives.map(o=>`<li>${o}</li>`).join('')}</ul>
+  </div>
+
+  <div class="panel content">
+    ${m.sections.map(s=>`<h4>${esc(s.h)}</h4>${s.body}`).join('')}
+  </div>
+
+  <div class="panel">
+    <h3><span class="ic">🔢</span>Numbers to know cold</h3>
+    <div class="kv">${m.numbers.map(n=>`<div class="cell"><div class="val">${n.val}</div><div class="lab">${esc(n.lab)}</div></div>`).join('')}</div>
+  </div>
+
+  <div class="panel">
+    <h3><span class="ic">💎</span>Attending-level pearls</h3>
+    ${m.pearls.map(p=>`<div class="pearl"><b>Pearl.</b> ${p}</div>`).join('')}
+  </div>
+
+  <div class="panel">
+    <h3><span class="ic">🎤</span>Pimp Points</h3>
+    <p class="hint">Answer out loud first, then tap to check yourself. These are the questions an intensivist actually asks.</p>
+    ${m.pimp.map(p=>`<details class="pimp"><summary><span class="q">${esc(p.q)}</span><span class="chev">+</span></summary><div class="ans">${p.a}</div></details>`).join('')}
+  </div>
+
+  <div class="panel">
+    <h3><span class="ic">📺</span>Go deeper</h3>
+    <div class="links">${m.links.map(l=>`<a class="linkcard ${l.kind}" href="${l.url}" target="_blank" rel="noopener">
+      <span class="lic">${l.kind==='yt'?'▶':l.kind==='book'?'📖':'🔗'}</span>
+      <span class="lt"><b>${esc(l.label)}</b><span>${esc(l.sub)}</span></span><span class="go">→</span></a>`).join('')}</div>
+  </div>
+
+  <div class="panel">
+    <h3><span class="ic">✅</span>Mastery check — earn ${esc(m.badge)}</h3>
+    <p class="hint">Tick each only when you can say it out loud, unprompted. +${XP_PER_SKILL} XP each, +${BADGE_BONUS} XP bonus for the badge.</p>
+    <div class="checklist">
+      ${m.checklist.map((c,idx)=>`<div class="chk${isOn(m.id,idx)?' on':''}" data-chk="${idx}" role="checkbox" tabindex="0" aria-checked="${isOn(m.id,idx)}">
+        <span class="box">${isOn(m.id,idx)?'✓':''}</span><span class="txt">${esc(c)}</span></div>`).join('')}
+    </div>
+    <div class="master-row">
+      <div class="master-badge${modDone(m)?' show':''}" id="mBadge"><span style="font-size:22px">🏅</span><span>${esc(m.badge)} earned</span></div>
+    </div>
+  </div>
+
+  <div class="back-row" style="margin-top:16px">
+    <button class="btn" data-back>← All modules</button>
+    ${next?`<button class="btn primary nav" data-go="${next.id}">Next: ${esc(next.title)} ▶</button>`:`<button class="btn primary nav" data-tabjump="cram">Finish with the Cram Sheet ▶</button>`}
+  </div>`;
+
+  v.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>show('dex'));
+  v.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>openModule(+b.dataset.go));
+  v.querySelectorAll('[data-tabjump]').forEach(b=>b.onclick=()=>show('cram'));
+  v.querySelectorAll('[data-chk]').forEach(el=>{
+    const fire=()=>toggleChk(m,+el.dataset.chk,el);
+    el.onclick=fire;
+    el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();fire();}};
+  });
+
+  show('module');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleChk(m,idx,el){
+  const was=modDone(m);
+  const k=key(m.id,idx);
+  state.checks[k]=!state.checks[k];
+  save();
+  const on=!!state.checks[k];
+  el.classList.toggle('on',on);
+  el.setAttribute('aria-checked',on);
+  el.querySelector('.box').textContent=on?'✓':'';
+  const now=modDone(m);
+  $('#mBadge').classList.toggle('show',now);
+  if(!was&&now){ celebrate(m); }
+  else if(on){ toast('⚡','+'+XP_PER_SKILL+' XP'); }
+  paintProgress();
+}
+
+/* ============ RENDER: CRAM ============ */
+function renderCram(){
+  $('#cramBody').innerHTML=`<div class="section-head"><h2>Night-Before Cram Sheet</h2><p>Everything condensed — read this last</p></div>`+
+  CRAM.map(s=>`<h3>${esc(s.sec)}</h3><div class="cram-grid">${s.blocks.map(b=>
+    `<div class="cram-block"><h4><span class="d" style="background:${b.c}"></span>${esc(b.t)}</h4><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`
+  ).join('')}</div>`).join('');
+}
+
+/* ============ RENDER: BADGES ============ */
+function renderBadges(){
+  $('#badgeCase').innerHTML=MODULES.map(m=>{
+    const done=modDone(m);
+    return `<div class="badge-slot${done?' earned':''}" style="--tc:${m.color}">
+      <div class="disc">${m.emoji}</div>
+      <b>${esc(m.badge)}</b>
+      <span>${done?'Earned':modCount(m)+'/'+m.checklist.length+' skills'}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ============ PROGRESS PAINT ============ */
+function paintProgress(){
+  const t=totals(), L=levelFor(t.xp);
+  $('#sBadges').textContent=t.badges+'/'+MODULES.length;
+  $('#sSkills').textContent=t.skills;
+  $('#sXp').textContent=t.xp;
+  $('#sPct').textContent=t.pct+'%';
+  $('#xpTitle').textContent=L.cur.title;
+  $('#xpNext').textContent=L.next?(L.next.xp-t.xp)+' XP → '+L.next.title:'Max level reached';
+  $('#xpFill').style.width=L.pct+'%';
+  $('#tbLvl').textContent='Lv '+(L.idx+1);
+  $('#tbBar').style.width=L.pct+'%';
+  renderDex(); renderBadges();
+}
+
+/* ============ CELEBRATION ============ */
+let lastLvl=null;
+function celebrate(m){
+  confetti(m.color);
+  toast('🏅',m.badge+' earned!  +'+BADGE_BONUS+' XP');
+}
+function confetti(color){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const box=$('#confetti'), cols=[color,'#ffd34e','#5ac8fa','#ff8fab','#22b07d'];
+  for(let i=0;i<70;i++){
+    const d=document.createElement('div');
+    d.className='confo';
+    d.style.left=Math.random()*100+'%';
+    d.style.background=cols[i%cols.length];
+    d.style.animationDuration=(1.6+Math.random()*1.4)+'s';
+    d.style.animationDelay=(Math.random()*.35)+'s';
+    d.style.opacity=.85;
+    box.appendChild(d);
+    setTimeout(()=>d.remove(),3600);
+  }
+}
+let tTimer;
+function toast(em,msg){
+  $('#toast .tem').textContent=em;
+  $('#toastMsg').textContent=msg;
+  $('#toast').classList.add('show');
+  clearTimeout(tTimer);
+  tTimer=setTimeout(()=>$('#toast').classList.remove('show'),2400);
+}
+
+/* ============ TABS ============ */
+function show(view){
+  ['dex','module','cram','badges'].forEach(v=>$('#view-'+v).classList.toggle('hidden',v!==view));
+  const tabFor=view==='module'?'dex':view;
+  $$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tabFor));
+  if(view!=='module')window.scrollTo({top:0,behavior:'smooth'});
+}
+$$('.tab').forEach(t=>t.onclick=()=>show(t.dataset.tab));
+$('#resetBtn').onclick=()=>{
+  if(confirm('Clear every checkmark, badge, and XP point?')){
+    state={checks:{}};save();paintProgress();show('dex');toast('🔄','Progress reset');
+  }
+};
+
+/* ============ INIT ============ */
+renderCram(); paintProgress(); show('dex');
+const lv0=levelFor(totals().xp).idx;
+setInterval(()=>{
+  const now=levelFor(totals().xp).idx;
+  if(lastLvl===null){lastLvl=now;return;}
+  if(now>lastLvl){lastLvl=now;toast('⬆️','Level up — '+LEVELS[now].title);}
+  lastLvl=now;
+},600);
+</script>
+<footer style="margin-top:2rem;padding:1rem;border-top:1px solid #ccc;font-size:0.85rem;color:#555;">
+  <strong>Educational use only.</strong> ICU-DEX is a teaching reference and has not been
+  validated for clinical decision making. It does not replace institutional protocols,
+  current prescribing information, or independent clinical judgment. Verify all doses and
+  parameters against primary sources before any patient care use.
+  <br><br>
+  ICU-DEX v1.0.0. Author: Simranjeet Singh Nagoke, MBBS (ORCID 0009-0007-8617-945X).
+  Licensed CC BY 4.0.
+</footer></body>
+</html>
