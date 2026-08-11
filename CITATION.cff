@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this tool, please cite it as below."
+title: "ICU-DEX: An Interactive Reference Tool for Critical Care Education"
+abstract: >-
+  ICU-DEX is a browser-based educational reference that organizes core critical
+  care concepts, drug and device parameters, and bedside decision frameworks into
+  a searchable interface for medical students, international medical graduates,
+  and early trainees. Intended for education only; not validated as a clinical
+  decision support system.
+type: software
+authors:
+  - family-names: Nagoke
+    given-names: Simranjeet Singh
+    orcid: "https://orcid.org/0009-0007-8617-945X"
+    email: simran.156.jeet@gmail.com
+    affiliation: "Independent Researcher"
+version: 1.0.0
+date-released: 2026-08-11
+license: MIT
+repository-code: "https://github.com/YOURUSERNAME/icu-dex"
+keywords:
+  - critical care
+  - medical education
+  - intensive care unit
+  - graduate medical education
+  - clinical reference
